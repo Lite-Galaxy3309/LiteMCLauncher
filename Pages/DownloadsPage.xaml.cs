@@ -278,7 +278,7 @@ public sealed partial class DownloadsPage : Page
             {
                 new TextBlock
                 {
-                    Text = $"Minecraft {gameVersion} · 检测到 {versions.Count} 个可安装版本",
+                    Text = $"Minecraft {gameVersion} · 检测到 {versions.Count} 个可安装版本（稳定 / 推荐优先）",
                     TextWrapping = TextWrapping.Wrap,
                 },
                 combo,

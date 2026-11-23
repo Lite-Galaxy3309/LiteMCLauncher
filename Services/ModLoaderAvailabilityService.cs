@@ -26,6 +26,7 @@ public sealed class ModLoaderAvailabilityService
     {
         PropertyNameCaseInsensitive = true,
     };
+    private static readonly VersionTextComparer VersionComparer = new();
 
     private static readonly Dictionary<ModLoaderType, IReadOnlySet<string>> Cache = [];
     private static readonly SemaphoreSlim CacheGate = new(1, 1);
@@ -99,14 +100,22 @@ public sealed class ModLoaderAvailabilityService
         var entries = await JsonSerializer.DeserializeAsync<List<FabricLoaderEntry>>(
             stream, JsonOptions, cancellationToken);
 
-        return entries?
+        var loaders = entries?
             .Select(entry => entry.Loader)
             .Where(loader => !string.IsNullOrWhiteSpace(loader?.Version))
-            .Select(loader => new LoaderVersionOption(
-                $"Fabric Loader {loader!.Version}",
-                loader.Version!,
-                loader.Stable))
+            .OrderByDescending(loader => loader!.Version, VersionComparer)
             .ToList() ?? [];
+
+        var stable = loaders.Where(loader => loader!.Stable).ToList();
+        var candidates = stable.Count > 0 ? stable : loaders;
+        var versions = LimitToLatestVersionLine(
+            candidates.Select(loader => loader!.Version!).ToList());
+        return versions
+            .Select(version => new LoaderVersionOption(
+                $"Fabric Loader {version}",
+                version,
+                true))
+            .ToList();
     }
 
     private static async Task<IReadOnlyList<LoaderVersionOption>> GetQuiltLoaderVersionsAsync(
@@ -121,13 +130,21 @@ public sealed class ModLoaderAvailabilityService
         var entries = await JsonSerializer.DeserializeAsync<List<QuiltLoaderEntry>>(
             stream, JsonOptions, cancellationToken);
 
-        return entries?
+        var loaders = entries?
             .Select(entry => entry.Loader)
             .Where(loader => !string.IsNullOrWhiteSpace(loader?.Version))
-            .Select(loader => new LoaderVersionOption(
-                $"Quilt Loader {loader!.Version}",
-                loader.Version!))
+            .OrderByDescending(loader => loader!.Version, VersionComparer)
             .ToList() ?? [];
+
+        var stable = loaders
+            .Where(loader => !IsPrerelease(loader!.Version))
+            .ToList();
+        var candidates = stable.Count > 0 ? stable : loaders;
+        var versions = LimitToLatestVersionLine(
+            candidates.Select(loader => loader!.Version!).ToList());
+        return versions
+            .Select(version => new LoaderVersionOption($"Quilt Loader {version}", version))
+            .ToList();
     }
 
     private static async Task<IReadOnlyList<LoaderVersionOption>> GetForgeLoaderVersionsAsync(
@@ -142,11 +159,14 @@ public sealed class ModLoaderAvailabilityService
         }
 
         var prefix = gameVersion + "-";
-        return builds
-            .Where(build => build.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-            .Select(build => build[prefix.Length..])
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .OrderByDescending(version => version, StringComparer.OrdinalIgnoreCase)
+        var versions = LimitToLatestVersionLine(
+            builds
+                .Where(build => build.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                .Select(build => build[prefix.Length..])
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList());
+
+        return versions
             .Select(version => new LoaderVersionOption($"Forge {version}", version))
             .ToList();
     }
@@ -155,11 +175,14 @@ public sealed class ModLoaderAvailabilityService
         string gameVersion,
         CancellationToken cancellationToken)
     {
-        var versions = await GetNeoForgeVersionsAsync(cancellationToken);
+        var allVersions = await GetNeoForgeVersionsAsync(cancellationToken);
+        var versions = LimitToLatestVersionLine(
+            allVersions
+                .Where(version => string.Equals(
+                    MapNeoForgeGameVersion(version), gameVersion, StringComparison.OrdinalIgnoreCase))
+                .ToList());
+
         return versions
-            .Where(version => string.Equals(
-                MapNeoForgeGameVersion(version), gameVersion, StringComparison.OrdinalIgnoreCase))
-            .OrderByDescending(version => version, StringComparer.OrdinalIgnoreCase)
             .Select(version => new LoaderVersionOption($"NeoForge {version}", version))
             .ToList();
     }
@@ -288,8 +311,45 @@ public sealed class ModLoaderAvailabilityService
         return _neoForgeVersions;
     }
 
-    private static string? MapNeoForgeGameVersion(string neoVersion)
+    private static List<string> LimitToLatestVersionLine(
+        IReadOnlyList<string> versions,
+        int maxCount = 5)
     {
+        if (versions.Count == 0)
+        {
+            return [];
+        }
+
+        var ordered = versions
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderByDescending(version => version, VersionComparer)
+            .ToList();
+        var latest = ordered[0];
+        var parts = latest.Split('.');
+        var line = parts.Length >= 2 ? $"{parts[0]}.{parts[1]}" : latest;
+
+        return ordered
+            .Where(version =>
+                string.Equals(version, line, StringComparison.OrdinalIgnoreCase) ||
+                version.StartsWith(line + ".", StringComparison.OrdinalIgnoreCase))
+            .Take(maxCount)
+            .ToList();
+    }
+
+    private static bool IsPrerelease(string? version)
+    {
+        if (string.IsNullOrWhiteSpace(version))
+        {
+            return false;
+        }
+
+        return version.Contains("-beta", StringComparison.OrdinalIgnoreCase) ||
+               version.Contains("-alpha", StringComparison.OrdinalIgnoreCase) ||
+               version.Contains("-pre", StringComparison.OrdinalIgnoreCase) ||
+               version.Contains("-rc", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string? MapNeoForgeGameVersion(string neoVersion)    {
         // NeoForge uses versions such as:
         //   1.20.4 -> 20.4.237, 1.21.1 -> 21.1.209,
         //   26.1.2 -> 26.1.2.71, 26.2 -> 26.2.0.57.
@@ -335,6 +395,50 @@ public sealed class ModLoaderAvailabilityService
         };
         client.DefaultRequestHeaders.UserAgent.ParseAdd("LiteMCLauncher/0.3.0");
         return client;
+    }
+
+    private sealed class VersionTextComparer : IComparer<string?>
+    {
+        public int Compare(string? x, string? y)
+        {
+            if (ReferenceEquals(x, y))
+            {
+                return 0;
+            }
+
+            if (x is null)
+            {
+                return -1;
+            }
+
+            if (y is null)
+            {
+                return 1;
+            }
+
+            var left = x.Split(['.', '-', '+'], StringSplitOptions.RemoveEmptyEntries);
+            var right = y.Split(['.', '-', '+'], StringSplitOptions.RemoveEmptyEntries);
+            var count = Math.Max(left.Length, right.Length);
+
+            for (var index = 0; index < count; index++)
+            {
+                var leftPart = index < left.Length ? left[index] : "0";
+                var rightPart = index < right.Length ? right[index] : "0";
+                var leftNumber = int.TryParse(leftPart, out var leftValue);
+                var rightNumber = int.TryParse(rightPart, out var rightValue);
+
+                var comparison = leftNumber && rightNumber
+                    ? leftValue.CompareTo(rightValue)
+                    : string.Compare(leftPart, rightPart, StringComparison.OrdinalIgnoreCase);
+
+                if (comparison != 0)
+                {
+                    return comparison;
+                }
+            }
+
+            return string.Compare(x, y, StringComparison.OrdinalIgnoreCase);
+        }
     }
 
     private sealed class MetaGameVersion
