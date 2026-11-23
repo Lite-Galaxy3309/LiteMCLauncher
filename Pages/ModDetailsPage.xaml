@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="LiteMCLauncher.Pages.ModDetailsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:LiteMCLauncher.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:LiteMCLauncher.Models"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <Style x:Key="VersionListViewItemStyle" TargetType="ListViewItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+
+        <DataTemplate x:Key="VersionItemTemplate" x:DataType="models:ModVersionInfo">
+            <Border Padding="14" Style="{StaticResource CardBorderStyle}">
+                <Grid ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock
+                            Style="{StaticResource CardTitleTextBlockStyle}"
+                            Text="{x:Bind DisplayName}"
+                            TextWrapping="Wrap" />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="{x:Bind GameVersionsDisplay}"
+                            TextWrapping="Wrap" />
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Border Style="{StaticResource PillBorderStyle}">
+                                <TextBlock
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="{x:Bind LoadersDisplay}" />
+                            </Border>
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="{x:Bind PublishedDisplay}" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="{x:Bind FileSizeDisplay}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Button
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Click="DownloadVersion_Click"
+                        Content="下载并安装" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </Page.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Padding="32,24,32,24" Spacing="20">
+            <Button
+                AutomationProperties.Name="返回 Mods 列表"
+                Click="Back_Click"
+                HorizontalAlignment="Left">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon FontSize="16" Glyph="&#xE72B;" />
+                    <TextBlock Text="返回 Mods 列表" />
+                </StackPanel>
+            </Button>
+
+            <Border Style="{StaticResource CardBorderStyle}">
+                <Grid ColumnSpacing="20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border
+                        Width="96"
+                        Height="96"
+                        VerticalAlignment="Top"
+                        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        CornerRadius="12">
+                        <Grid>
+                            <FontIcon
+                                FontSize="36"
+                                Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                Glyph="&#xE8F1;" />
+                            <Image
+                                Source="{x:Bind ViewModel.ProjectIconUrl, Mode=OneWay, Converter={StaticResource StringToImageSourceConverter}}"
+                                Stretch="UniformToFill" />
+                        </Grid>
+                    </Border>
+
+                    <StackPanel
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Spacing="5">
+                        <TextBlock
+                            Style="{StaticResource SubtitleTextBlockStyle}"
+                            Text="{x:Bind ViewModel.ProjectTitle, Mode=OneWay}"
+                            TextWrapping="Wrap" />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="{x:Bind ViewModel.ProjectAuthor, Mode=OneWay}" />
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Border Style="{StaticResource PillBorderStyle}">
+                                <TextBlock
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="{x:Bind ViewModel.ProjectSource, Mode=OneWay}" />
+                            </Border>
+                            <Border Style="{StaticResource PillBorderStyle}">
+                                <TextBlock
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="{x:Bind ViewModel.ProjectTypeDisplay, Mode=OneWay}" />
+                            </Border>
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="{x:Bind ViewModel.ProjectDownloads, Mode=OneWay}" />
+                        </StackPanel>
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="{x:Bind ViewModel.ProjectCategories, Mode=OneWay}"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel
+                        Grid.Column="2"
+                        MinWidth="220"
+                        VerticalAlignment="Center"
+                        Spacing="8">
+                        <Button
+                            Click="InstallLatest_Click"
+                            Content="安装最新版本"
+                            HorizontalAlignment="Stretch"
+                            Style="{StaticResource AccentButtonStyle}" />
+                        <HyperlinkButton
+                            Content="打开项目页面"
+                            HorizontalAlignment="Center"
+                            NavigateUri="{x:Bind ViewModel.ProjectUri, Mode=OneWay}" />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="{x:Bind ViewModel.CurrentInstanceDisplay, Mode=OneWay}"
+                            TextAlignment="Center"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}">
+                <Expander
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch">
+                    <Expander.Header>
+                        <TextBlock Style="{StaticResource CardTitleTextBlockStyle}" Text="项目介绍（展开查看详情）" />
+                    </Expander.Header>
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        IsTextSelectionEnabled="True"
+                        Text="{x:Bind ViewModel.Description, Mode=OneWay}"
+                        TextWrapping="Wrap" />
+                </Expander>
+            </Border>
+
+            <Border
+                Style="{StaticResource CardBorderStyle}"
+                Visibility="{x:Bind ViewModel.HasGallery, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel Spacing="10">
+                    <TextBlock Style="{StaticResource CardTitleTextBlockStyle}" Text="项目截图" />
+                    <ScrollViewer
+                        HorizontalScrollBarVisibility="Auto"
+                        HorizontalScrollMode="Enabled"
+                        VerticalScrollBarVisibility="Disabled"
+                        VerticalScrollMode="Disabled">
+                        <ItemsControl ItemsSource="{x:Bind ViewModel.Gallery}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="8" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border
+                                        Width="220"
+                                        Height="124"
+                                        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                        CornerRadius="8">
+                                        <Image
+                                            Source="{Binding Converter={StaticResource StringToImageSourceConverter}}"
+                                            Stretch="UniformToFill" />
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </StackPanel>
+            </Border>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Style="{StaticResource CardTitleTextBlockStyle}"
+                    Text="{x:Bind ViewModel.VersionCountText, Mode=OneWay}" />
+                <StackPanel
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="10">
+                    <ComboBox
+                        Width="150"
+                        AutomationProperties.Name="按模组加载器筛选"
+                        ItemsSource="{x:Bind ViewModel.LoaderFilters}"
+                        SelectedItem="{x:Bind ViewModel.SelectedLoaderFilter, Mode=TwoWay}" />
+                    <ComboBox
+                        Width="150"
+                        AutomationProperties.Name="按游戏版本筛选"
+                        ItemsSource="{x:Bind ViewModel.GameVersionFilters}"
+                        SelectedItem="{x:Bind ViewModel.SelectedGameVersionFilter, Mode=TwoWay}" />
+                    <ProgressRing
+                        Width="20"
+                        Height="20"
+                        IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
+                        Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="{x:Bind ViewModel.StatusText, Mode=OneWay}" />
+                </StackPanel>
+            </Grid>
+
+            <ItemsControl ItemsSource="{x:Bind ViewModel.VersionGroups, Mode=OneWay}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="models:ModVersionGroup">
+                        <Expander
+                            Margin="0,0,0,8"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch">
+                            <Expander.Header>
+                                <TextBlock
+                                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                                    Text="{x:Bind Title}" />
+                            </Expander.Header>
+                            <ListView
+                                MaxHeight="340"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                ItemContainerStyle="{StaticResource VersionListViewItemStyle}"
+                                ItemsSource="{x:Bind Items}"
+                                ItemTemplate="{StaticResource VersionItemTemplate}"
+                                SelectionMode="None" />
+                        </Expander>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <TextBlock
+                HorizontalAlignment="Center"
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Style="{StaticResource CaptionTextBlockStyle}"
+                Text="{x:Bind ViewModel.EmptyVersionText, Mode=OneWay}"
+                Visibility="{x:Bind ViewModel.HasVersions, Mode=OneWay, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
+        </StackPanel>
+    </ScrollViewer>
+</Page>

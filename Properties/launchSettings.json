@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "LiteMCLauncher (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "LiteMCLauncher (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

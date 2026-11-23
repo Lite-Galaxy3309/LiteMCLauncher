@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="LiteMCLauncher.Pages.HomePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:LiteMCLauncher.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:LiteMCLauncher.Models"
+    mc:Ignorable="d">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Padding="32,24,32,24" Spacing="20">
+                <StackPanel Spacing="4">
+                    <TextBlock Style="{StaticResource PageTitleTextBlockStyle}" Text="主页" />
+                    <TextBlock
+                        Style="{StaticResource PageSubtitleTextBlockStyle}"
+                        Text="欢迎回来，选择一个实例，继续你的 Minecraft 冒险。" />
+                </StackPanel>
+
+                <!--  微软账号  -->
+                <Border Style="{StaticResource CardBorderStyle}">
+                    <Grid ColumnSpacing="16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <PersonPicture
+                            Width="56"
+                            Height="56"
+                            VerticalAlignment="Center"
+                            ProfilePicture="{x:Bind ViewModel.AccountAvatar, Mode=OneWay}" />
+
+                        <StackPanel
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Spacing="2">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock
+                                    Style="{StaticResource CardTitleTextBlockStyle}"
+                                    Text="{x:Bind ViewModel.AccountTitle, Mode=OneWay}" />
+                                <Border Style="{StaticResource PillBorderStyle}">
+                                    <TextBlock
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        Text="{x:Bind ViewModel.AccountStatus, Mode=OneWay}" />
+                                </Border>
+                            </StackPanel>
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="{x:Bind ViewModel.AccountDetail, Mode=OneWay}"
+                                TextWrapping="Wrap" />
+                            <ComboBox
+                                Width="280"
+                                Margin="0,6,0,0"
+                                HorizontalAlignment="Left"
+                                AutomationProperties.Name="选择账号"
+                                DisplayMemberPath="DisplayName"
+                                ItemsSource="{x:Bind ViewModel.Accounts}"
+                                PlaceholderText="选择账号"
+                                SelectedItem="{x:Bind ViewModel.SelectedAccount, Mode=TwoWay}" />
+                        </StackPanel>
+
+                        <StackPanel
+                            Grid.Column="2"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal"
+                            Spacing="8">
+                            <Button
+                                AutomationProperties.Name="移除账号"
+                                Click="RemoveAccount_Click"
+                                Content="移除"
+                                IsEnabled="{x:Bind ViewModel.IsLoggedIn, Mode=OneWay}" />
+                            <Button
+                                AutomationProperties.Name="离线模式"
+                                Click="OfflineButton_Click"
+                                Content="离线模式" />
+                            <Button
+                                x:Name="LoginButton"
+                                AutomationProperties.Name="{x:Bind ViewModel.LoginButtonText, Mode=OneWay}"
+                                Click="LoginButton_Click"
+                                IsEnabled="{x:Bind ViewModel.CanLogIn, Mode=OneWay}"
+                                Style="{StaticResource AccentButtonStyle}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon FontSize="16" Glyph="&#xE77B;" />
+                                    <TextBlock Text="{x:Bind ViewModel.LoginButtonText, Mode=OneWay}" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!--  当前实例  -->
+                <Border Style="{StaticResource CardBorderStyle}">
+                    <StackPanel Spacing="16">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Spacing="2">
+                                <TextBlock Style="{StaticResource CardTitleTextBlockStyle}" Text="当前实例" />
+                                <TextBlock
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="启动器将使用下面选择的实例和配置。" />
+                            </StackPanel>
+                            <HyperlinkButton
+                                Grid.Column="1"
+                                VerticalAlignment="Center"
+                                Click="ManageInstance_Click"
+                                Content="管理实例" />
+                        </Grid>
+
+                        <Grid ColumnSpacing="20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <ComboBox
+                                HorizontalAlignment="Stretch"
+                                DisplayMemberPath="DisplayName"
+                                Header="实例"
+                                ItemsSource="{x:Bind ViewModel.Instances}"
+                                PlaceholderText="未找到本地实例"
+                                SelectedItem="{x:Bind ViewModel.SelectedInstance, Mode=TwoWay}" />
+
+                            <StackPanel
+                                Grid.Column="1"
+                                Margin="0,0,0,4"
+                                VerticalAlignment="Bottom"
+                                Orientation="Horizontal"
+                                Spacing="8">
+                                <Border Style="{StaticResource PillBorderStyle}">
+                                    <TextBlock
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        Text="{x:Bind ViewModel.SelectedGameVersion, Mode=OneWay}" />
+                                </Border>
+                                <Border Style="{StaticResource PillBorderStyle}">
+                                    <TextBlock
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        Text="{x:Bind ViewModel.SelectedLoader, Mode=OneWay}" />
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Grid ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!--  快捷操作  -->
+                    <Border Style="{StaticResource CardBorderStyle}">
+                        <StackPanel Spacing="10">
+                            <TextBlock Style="{StaticResource CardTitleTextBlockStyle}" Text="快捷操作" />
+                            <Button
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left"
+                                AutomationProperties.Name="打开游戏目录"
+                                Click="OpenGameDirectory_Click">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <FontIcon FontSize="16" Glyph="&#xE8B7;" />
+                                    <TextBlock Text="打开游戏目录" />
+                                </StackPanel>
+                            </Button>
+                            <Button
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left"
+                                AutomationProperties.Name="查看运行日志"
+                                Click="OpenLogs_Click">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <FontIcon FontSize="16" Glyph="&#xE8A5;" />
+                                    <TextBlock Text="查看运行日志" />
+                                </StackPanel>
+                            </Button>
+                            <Button
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left"
+                                AutomationProperties.Name="安装 Mod"
+                                Click="InstallMod_Click">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <FontIcon FontSize="16" Glyph="&#xE8F1;" />
+                                    <TextBlock Text="安装 Mod" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <!--  环境状态  -->
+                    <Border
+                        Grid.Column="1"
+                        Style="{StaticResource CardBorderStyle}">
+                        <StackPanel Spacing="12">
+                            <TextBlock Style="{StaticResource CardTitleTextBlockStyle}" Text="环境状态" />
+
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Border
+                                    Width="8"
+                                    Height="8"
+                                    VerticalAlignment="Center"
+                                    Background="{ThemeResource SystemFillColorSuccessBrush}"
+                                    CornerRadius="4"
+                                    Visibility="{x:Bind ViewModel.IsJavaReady, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                <Border
+                                    Width="8"
+                                    Height="8"
+                                    VerticalAlignment="Center"
+                                    Background="{ThemeResource TextFillColorSecondaryBrush}"
+                                    CornerRadius="4"
+                                    Visibility="{x:Bind ViewModel.IsJavaReady, Mode=OneWay, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Text="{x:Bind ViewModel.JavaStatusText, Mode=OneWay}" />
+                            </Grid>
+
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Border
+                                    Width="8"
+                                    Height="8"
+                                    VerticalAlignment="Center"
+                                    Background="{ThemeResource SystemFillColorSuccessBrush}"
+                                    CornerRadius="4" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Text="{x:Bind ViewModel.MemoryStatusText, Mode=OneWay}" />
+                            </Grid>
+
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Border
+                                    Width="8"
+                                    Height="8"
+                                    VerticalAlignment="Center"
+                                    Background="{ThemeResource TextFillColorSecondaryBrush}"
+                                    CornerRadius="4" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="{x:Bind ViewModel.AccountStatusLine, Mode=OneWay}" />
+                            </Grid>
+
+                            <TextBlock
+                                Margin="0,4,0,0"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="上次检查：刚刚" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!--  底部启动栏  -->
+        <Border
+            Grid.Row="1"
+            Padding="32,16"
+            Background="{ThemeResource LayerFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="0,1,0,0">
+            <Grid ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel VerticalAlignment="Center" Spacing="2">
+                    <TextBlock
+                        Style="{StaticResource CardTitleTextBlockStyle}"
+                        Text="{x:Bind ViewModel.LaunchTargetTitle, Mode=OneWay}" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="{x:Bind ViewModel.LaunchSummary, Mode=OneWay}" />
+                </StackPanel>
+
+                <Button
+                    x:Name="LaunchButton"
+                    Grid.Column="1"
+                    MinWidth="260"
+                    Height="56"
+                    HorizontalContentAlignment="Center"
+                    AutomationProperties.Name="启动游戏"
+                    Click="LaunchButton_Click"
+                    Style="{StaticResource AccentButtonStyle}">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <FontIcon FontSize="20" Glyph="&#xE768;" />
+                        <TextBlock
+                            FontSize="20"
+                            FontWeight="SemiBold"
+                            Text="启动游戏" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+
+
+        <!--  正在播放悬浮窗  -->
+        <Border
+            Grid.RowSpan="2"
+            Width="390"
+            Margin="0,24,24,0"
+            Padding="12"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
+            Style="{StaticResource CardBorderStyle}"
+            Visibility="{x:Bind ViewModel.Music.IsOverlayVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid ColumnSpacing="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Border
+                    Width="48"
+                    Height="48"
+                    Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                    CornerRadius="8">
+                    <Grid>
+                        <FontIcon
+                            FontSize="20"
+                            Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                            Glyph="&#xE8D6;" />
+                        <Image
+                            Source="{x:Bind ViewModel.Music.CurrentAlbumArt, Mode=OneWay}"
+                            Stretch="UniformToFill" />
+                    </Grid>
+                </Border>
+                <StackPanel
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Spacing="2">
+                    <TextBlock
+                        MaxLines="1"
+                        Style="{StaticResource BodyStrongTextBlockStyle}"
+                        Text="{x:Bind ViewModel.Music.CurrentTitle, Mode=OneWay}"
+                        TextTrimming="CharacterEllipsis" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        MaxLines="1"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="{x:Bind ViewModel.Music.CurrentArtist, Mode=OneWay}"
+                        TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+                <StackPanel
+                    Grid.Column="2"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="4">
+                    <Button
+                        AutomationProperties.Name="上一首"
+                        Click="MusicPrevious_Click"
+                        Padding="7">
+                        <FontIcon FontSize="15" Glyph="&#xE892;" />
+                    </Button>
+                    <Button
+                        AutomationProperties.Name="播放或暂停"
+                        Click="MusicPlayPause_Click"
+                        Padding="7">
+                        <FontIcon FontSize="16" Glyph="{x:Bind ViewModel.Music.PlayPauseGlyph, Mode=OneWay}" />
+                    </Button>
+                    <Button
+                        AutomationProperties.Name="下一首"
+                        Click="MusicNext_Click"
+                        Padding="7">
+                        <FontIcon FontSize="15" Glyph="&#xE893;" />
+                    </Button>
+                    <Button
+                        AutomationProperties.Name="切换播放模式"
+                        Click="MusicRepeatMode_Click"
+                        Padding="7">
+                        <TextBlock
+                            FontSize="11"
+                            Text="{x:Bind ViewModel.Music.RepeatModeDisplay, Mode=OneWay}" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Page>

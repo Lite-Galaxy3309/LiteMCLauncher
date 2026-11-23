@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="LiteMCLauncher.Pages.InstanceManagePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:LiteMCLauncher.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:LiteMCLauncher.Models"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <Style x:Key="ContentListViewItemStyle" TargetType="ListViewItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+
+        <DataTemplate x:Key="InstanceContentItemTemplate" x:DataType="models:InstanceContentItem">
+            <Border Padding="12" Style="{StaticResource CardBorderStyle}">
+                <Grid ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon
+                        FontSize="20"
+                        Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                        Glyph="{x:Bind IconGlyph}" />
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Text="{x:Bind Name}"
+                            TextWrapping="Wrap" />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="{x:Bind DetailText}" />
+                    </StackPanel>
+                    <TextBlock
+                        Grid.Column="2"
+                        VerticalAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="{x:Bind ModifiedDisplay}" />
+                    <Button
+                        Grid.Column="3"
+                        VerticalAlignment="Center"
+                        Click="OpenItem_Click"
+                        Content="打开"
+                        Tag="{x:Bind FullPath}" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate x:Key="LogLineTemplate" x:DataType="models:LogLine">
+            <TextBlock
+                Padding="2,1"
+                FontFamily="Consolas"
+                FontSize="12"
+                Foreground="{x:Bind Foreground}"
+                IsTextSelectionEnabled="True"
+                Text="{x:Bind Text}"
+                TextWrapping="Wrap" />
+        </DataTemplate>
+    </Page.Resources>
+
+    <Grid Padding="32,24,32,24" RowSpacing="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Button
+                AutomationProperties.Name="返回实例列表"
+                Click="Back_Click"
+                VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon FontSize="16" Glyph="&#xE72B;" />
+                    <TextBlock Text="返回" />
+                </StackPanel>
+            </Button>
+            <StackPanel
+                Grid.Column="1"
+                Margin="16,0,0,0"
+                VerticalAlignment="Center"
+                Spacing="2">
+                <TextBlock
+                    Style="{StaticResource PageTitleTextBlockStyle}"
+                    Text="{x:Bind ViewModel.InstanceTitle, Mode=OneWay}" />
+                <TextBlock
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Style="{StaticResource PageSubtitleTextBlockStyle}"
+                    Text="{x:Bind ViewModel.InstanceSummary, Mode=OneWay}" />
+            </StackPanel>
+            <StackPanel
+                Grid.Column="2"
+                VerticalAlignment="Center"
+                Orientation="Horizontal"
+                Spacing="8">
+                <Button
+                    AutomationProperties.Name="刷新实例内容"
+                    Click="Refresh_Click"
+                    Content="刷新" />
+                <Button
+                    AutomationProperties.Name="打开实例目录"
+                    Click="OpenInstanceDirectory_Click"
+                    Content="打开实例目录"
+                    Style="{StaticResource AccentButtonStyle}" />
+            </StackPanel>
+        </Grid>
+
+        <Border
+            Grid.Row="1"
+            Padding="16"
+            Style="{StaticResource CardBorderStyle}">
+            <Grid ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Spacing="2">
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="实例游戏目录" />
+                    <TextBlock
+                        Text="{x:Bind ViewModel.GameDirectory, Mode=OneWay}"
+                        TextTrimming="CharacterEllipsis"
+                        TextWrapping="NoWrap"
+                        ToolTipService.ToolTip="{x:Bind ViewModel.GameDirectory, Mode=OneWay}" />
+                </StackPanel>
+                <Border
+                    Grid.Column="1"
+                    Style="{StaticResource PillBorderStyle}">
+                    <TextBlock
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="{x:Bind ViewModel.InstanceLoader, Mode=OneWay}" />
+                </Border>
+            </Grid>
+        </Border>
+
+        <TabView
+            Grid.Row="2"
+            IsAddTabButtonVisible="False">
+            <TabViewItem IsClosable="False">
+                <TabViewItem.Header>
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <FontIcon FontSize="16" Glyph="&#xE713;" />
+                        <TextBlock Text="实例设置" />
+                    </StackPanel>
+                </TabViewItem.Header>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Padding="4" Spacing="12">
+                        <Border Padding="16" Style="{StaticResource CardBorderStyle}">
+                            <StackPanel Spacing="6">
+                                <ToggleSwitch
+                                    Header="启用实例特定游戏设置"
+                                    IsOn="{x:Bind ViewModel.IsInstanceSettingsEnabled, Mode=TwoWay}"
+                                    OnContent="已启用"
+                                    OffContent="已关闭" />
+                                <TextBlock
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="{x:Bind ViewModel.InstanceSettingsHint, Mode=OneWay}"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <ContentControl IsEnabled="{x:Bind ViewModel.IsInstanceSettingsEnabled, Mode=OneWay}">
+                            <StackPanel Spacing="12">
+                            <Border Padding="16" Style="{StaticResource CardBorderStyle}">
+                                <StackPanel Spacing="10">
+                                    <TextBlock Style="{StaticResource CardTitleTextBlockStyle}" Text="Java" />
+                                    <ComboBox
+                                        HorizontalAlignment="Stretch"
+                                        DisplayMemberPath="Display"
+                                        ItemsSource="{x:Bind ViewModel.JavaOptions}"
+                                        SelectedItem="{x:Bind ViewModel.SelectedJavaOption, Mode=TwoWay}" />
+                                    <TextBlock
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        IsTextSelectionEnabled="True"
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        Text="{x:Bind ViewModel.JavaPathDisplay, Mode=OneWay}"
+                                        TextWrapping="Wrap" />
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <Button Click="ReloadJava_Click" Content="重新检测" />
+                                        <Button Click="ChooseJava_Click" Content="选择 java.exe" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Padding="16" Style="{StaticResource CardBorderStyle}">
+                                <StackPanel Spacing="12">
+                                    <TextBlock Style="{StaticResource CardTitleTextBlockStyle}" Text="游戏参数" />
+                                    <NumberBox
+                                        Header="最大内存（MB）"
+                                        LargeChange="1024"
+                                        Maximum="32768"
+                                        Minimum="1024"
+                                        SmallChange="512"
+                                        SpinButtonPlacementMode="Compact"
+                                        Value="{x:Bind ViewModel.InstanceMaximumRamMb, Mode=TwoWay}" />
+                                    <TextBox
+                                        Header="额外 JVM 参数"
+                                        PlaceholderText="例如：-XX:+UseG1GC"
+                                        Text="{x:Bind ViewModel.InstanceJvmArguments, Mode=TwoWay}"
+                                        TextWrapping="Wrap" />
+                                    <ComboBox
+                                        Header="游戏语言"
+                                        DisplayMemberPath="Display"
+                                        ItemsSource="{x:Bind ViewModel.LanguageOptions}"
+                                        SelectedItem="{x:Bind ViewModel.SelectedLanguage, Mode=TwoWay}" />
+                                    <TextBlock
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        Text="启用后，Java、内存、JVM 参数和游戏语言都以此页为准，不再读取全局游戏设置。"
+                                        TextWrapping="Wrap" />
+                                    <Button
+                                        HorizontalAlignment="Left"
+                                        Click="SaveInstanceSettings_Click"
+                                        Content="保存实例设置"
+                                        Style="{StaticResource AccentButtonStyle}" />
+                                    <TextBlock
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        Text="{x:Bind ViewModel.InstanceSettingsStatus, Mode=OneWay}"
+                                        TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+                            </StackPanel>
+                        </ContentControl>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabViewItem>
+
+            <TabViewItem IsClosable="False">
+                <TabViewItem.Header>
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <FontIcon FontSize="16" Glyph="&#xE8B7;" />
+                        <TextBlock Text="资源管理" />
+                    </StackPanel>
+                </TabViewItem.Header>
+                <TabView
+                    IsAddTabButtonVisible="False"
+                    TabWidthMode="SizeToContent">
+                    <TabViewItem Header="世界" IsClosable="False">
+                        <ListView
+                            Background="Transparent"
+                            BorderThickness="0"
+                            ItemContainerStyle="{StaticResource ContentListViewItemStyle}"
+                            ItemTemplate="{StaticResource InstanceContentItemTemplate}"
+                            ItemsSource="{x:Bind ViewModel.Worlds}"
+                            SelectionMode="None" />
+                    </TabViewItem>
+                    <TabViewItem Header="资源包" IsClosable="False">
+                        <ListView
+                            Background="Transparent"
+                            BorderThickness="0"
+                            ItemContainerStyle="{StaticResource ContentListViewItemStyle}"
+                            ItemTemplate="{StaticResource InstanceContentItemTemplate}"
+                            ItemsSource="{x:Bind ViewModel.ResourcePacks}"
+                            SelectionMode="None" />
+                    </TabViewItem>
+                    <TabViewItem Header="光影包" IsClosable="False">
+                        <ListView
+                            Background="Transparent"
+                            BorderThickness="0"
+                            ItemContainerStyle="{StaticResource ContentListViewItemStyle}"
+                            ItemTemplate="{StaticResource InstanceContentItemTemplate}"
+                            ItemsSource="{x:Bind ViewModel.Shaders}"
+                            SelectionMode="None" />
+                    </TabViewItem>
+                    <TabViewItem Header="Mods" IsClosable="False">
+                        <ListView
+                            Background="Transparent"
+                            BorderThickness="0"
+                            ItemContainerStyle="{StaticResource ContentListViewItemStyle}"
+                            ItemTemplate="{StaticResource InstanceContentItemTemplate}"
+                            ItemsSource="{x:Bind ViewModel.Mods}"
+                            SelectionMode="None" />
+                    </TabViewItem>
+                    <TabViewItem Header="日志" IsClosable="False">
+                        <Grid Padding="4" RowSpacing="8">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Border Padding="12" Style="{StaticResource CardBorderStyle}">
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Spacing="2">
+                                        <TextBlock
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                            Text="最近一次日志" />
+                                        <TextBlock
+                                            IsTextSelectionEnabled="True"
+                                            Text="{x:Bind ViewModel.LogPathDisplay, Mode=OneWay}"
+                                            TextTrimming="CharacterEllipsis" />
+                                        <TextBlock
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                            Text="{x:Bind ViewModel.LogStatus, Mode=OneWay}"
+                                            TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <Button
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Click="RefreshLogs_Click"
+                                        Content="刷新日志" />
+                                </Grid>
+                            </Border>
+                            <ListView
+                                Grid.Row="1"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                ItemContainerStyle="{StaticResource ContentListViewItemStyle}"
+                                ItemTemplate="{StaticResource LogLineTemplate}"
+                                ItemsSource="{x:Bind ViewModel.Logs}"
+                                SelectionMode="None" />
+                        </Grid>
+                    </TabViewItem>
+                </TabView>
+            </TabViewItem>
+        </TabView>
+    </Grid>
+</Page>

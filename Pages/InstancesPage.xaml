@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="LiteMCLauncher.Pages.InstancesPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:LiteMCLauncher.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:LiteMCLauncher.Models"
+    mc:Ignorable="d">
+
+    <Grid Padding="32,24,32,24" RowSpacing="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Spacing="4">
+                <TextBlock Style="{StaticResource PageTitleTextBlockStyle}" Text="实例管理" />
+                <TextBlock
+                    Style="{StaticResource PageSubtitleTextBlockStyle}"
+                    Text="从 .minecraft/versions 读取本地已有的 Minecraft 实例。" />
+            </StackPanel>
+            <StackPanel
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                Orientation="Horizontal"
+                Spacing="8">
+                <Button Click="RefreshButton_Click" AutomationProperties.Name="刷新列表">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon FontSize="16" Glyph="&#xE72C;" />
+                        <TextBlock Text="刷新列表" />
+                    </StackPanel>
+                </Button>
+                <Button AutomationProperties.Name="新建实例" Style="{StaticResource AccentButtonStyle}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon FontSize="16" Glyph="&#xE710;" />
+                        <TextBlock Text="新建实例" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <!--  过滤栏  -->
+        <Border
+            Grid.Row="1"
+            Padding="12"
+            Style="{StaticResource CardBorderStyle}">
+            <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBox
+                    x:Name="SearchBox"
+                    PlaceholderText="搜索实例名称、版本或加载器..."
+                    TextChanged="SearchBox_TextChanged" />
+                <ComboBox
+                    x:Name="LoaderFilter"
+                    Grid.Column="1"
+                    Width="160"
+                    SelectedIndex="0"
+                    SelectionChanged="LoaderFilter_SelectionChanged">
+                    <ComboBoxItem Content="全部加载器" />
+                    <ComboBoxItem Content="Fabric" />
+                    <ComboBoxItem Content="Forge" />
+                    <ComboBoxItem Content="NeoForge" />
+                    <ComboBoxItem Content="Quilt" />
+                    <ComboBoxItem Content="原版" />
+                </ComboBox>
+                <ComboBox
+                    x:Name="SortFilter"
+                    Grid.Column="2"
+                    Width="180"
+                    SelectedIndex="0"
+                    SelectionChanged="SortFilter_SelectionChanged">
+                    <ComboBoxItem Content="最近修改" />
+                    <ComboBoxItem Content="名称" />
+                    <ComboBoxItem Content="版本" />
+                </ComboBox>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="2" RowSpacing="12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Style="{StaticResource CardTitleTextBlockStyle}"
+                    Text="{x:Bind ViewModel.InstanceCountText, Mode=OneWay}" />
+                <TextBlock
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Style="{StaticResource CaptionTextBlockStyle}"
+                    Text="{x:Bind ViewModel.StatusText, Mode=OneWay}" />
+            </Grid>
+
+            <Grid Grid.Row="1">
+                <ListView
+                    x:Name="InstanceList"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    ItemsSource="{x:Bind ViewModel.Instances}"
+                    SelectedItem="{x:Bind ViewModel.SelectedInstance, Mode=TwoWay}"
+                    SelectionMode="Single">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="MinHeight" Value="0" />
+                            <Setter Property="Padding" Value="0" />
+                            <Setter Property="Margin" Value="0,0,0,12" />
+                            <Setter Property="Background" Value="Transparent" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="models:MinecraftInstance">
+                            <Border
+                                Padding="16"
+                                Style="{StaticResource CardBorderStyle}"
+                                ToolTipService.ToolTip="{x:Bind DirectoryPath}">
+                                <Grid ColumnSpacing="16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Style="{StaticResource IconTileBorderStyle}">
+                                        <Image
+                                            Source="{x:Bind IconPath}"
+                                            Stretch="UniformToFill" />
+                                    </Border>
+
+                                    <StackPanel
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Spacing="3">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <TextBlock
+                                                MaxLines="1"
+                                                Style="{StaticResource CardTitleTextBlockStyle}"
+                                                Text="{x:Bind DisplayName}"
+                                                TextTrimming="CharacterEllipsis" />
+                                            <Border Style="{StaticResource PillBorderStyle}">
+                                                <TextBlock
+                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                    Text="{x:Bind VersionTypeDisplay}" />
+                                            </Border>
+                                        </StackPanel>
+                                        <TextBlock
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                            Text="{x:Bind Summary}" />
+                                        <TextBlock
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                            Text="{x:Bind Id}"
+                                            TextTrimming="CharacterEllipsis"
+                                            Visibility="{x:Bind HasCustomName, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                    </StackPanel>
+
+                                    <StackPanel
+                                        Grid.Column="2"
+                                        VerticalAlignment="Center"
+                                        Spacing="2">
+                                        <TextBlock
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                            Text="更新于" />
+                                        <TextBlock
+                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                            Text="{x:Bind UpdatedDisplay}" />
+                                    </StackPanel>
+
+                                    <StackPanel
+                                        Grid.Column="3"
+                                        VerticalAlignment="Center"
+                                        Orientation="Horizontal"
+                                        Spacing="8">
+                                        <Button
+                                            Click="LaunchInstance_Click"
+                                            Content="启动" />
+                                        <Button
+                                            Click="RenameInstance_Click"
+                                            Content="重命名" />
+                                        <Button
+                                            Click="ManageInstance_Click"
+                                            Content="管理" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <StackPanel
+                    MaxWidth="560"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="8"
+                    Visibility="{x:Bind ViewModel.IsEmpty, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <FontIcon
+                        FontSize="36"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Glyph="&#xE8B7;"
+                        HorizontalAlignment="Center" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Style="{StaticResource CardTitleTextBlockStyle}"
+                        Text="{x:Bind ViewModel.EmptyStateTitle, Mode=OneWay}" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="{x:Bind ViewModel.EmptyStateDescription, Mode=OneWay}"
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                    <Button
+                        Margin="0,8,0,0"
+                        HorizontalAlignment="Center"
+                        Click="RefreshButton_Click"
+                        Content="重新扫描" />
+                </StackPanel>
+
+                <ProgressRing
+                    Width="36"
+                    Height="36"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
+                    Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            </Grid>
+        </Grid>
+    </Grid>
+</Page>

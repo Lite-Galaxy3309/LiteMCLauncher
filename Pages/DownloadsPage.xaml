@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="LiteMCLauncher.Pages.DownloadsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:LiteMCLauncher.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:LiteMCLauncher.Models"
+    mc:Ignorable="d">
+
+    <Grid Padding="32,24,32,24" RowSpacing="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Spacing="4">
+                <TextBlock Style="{StaticResource PageTitleTextBlockStyle}" Text="版本下载" />
+                <TextBlock
+                    Style="{StaticResource PageSubtitleTextBlockStyle}"
+                    Text="从 Mojang 官方源安装原版（Vanilla）游戏、资源与依赖库。" />
+            </StackPanel>
+            <Button
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                AutomationProperties.Name="刷新版本列表"
+                Click="RefreshButton_Click">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon FontSize="16" Glyph="&#xE72C;" />
+                    <TextBlock Text="刷新列表" />
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <Border
+            Grid.Row="1"
+            Padding="12"
+            Style="{StaticResource CardBorderStyle}">
+            <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox
+                    x:Name="SearchBox"
+                    PlaceholderText="搜索版本号..."
+                    TextChanged="SearchBox_TextChanged" />
+                <ComboBox
+                    x:Name="TypeFilter"
+                    Grid.Column="1"
+                    Width="160"
+                    SelectedIndex="0"
+                    SelectionChanged="TypeFilter_SelectionChanged">
+                    <ComboBoxItem Content="全部版本" />
+                    <ComboBoxItem Content="正式版" />
+                    <ComboBoxItem Content="快照" />
+                    <ComboBoxItem Content="旧版" />
+                </ComboBox>
+                <ComboBox
+                    x:Name="LoaderBox"
+                    Grid.Column="2"
+                    Width="160"
+                    SelectedIndex="0"
+                    AutomationProperties.Name="安装时附加的模组加载器"
+                    SelectionChanged="LoaderBox_SelectionChanged">
+                    <ComboBoxItem Content="原版" />
+                    <ComboBoxItem Content="Fabric" />
+                    <ComboBoxItem Content="Forge" />
+                    <ComboBoxItem Content="NeoForge" />
+                    <ComboBoxItem Content="Quilt" />
+                </ComboBox>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="2" RowSpacing="12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Style="{StaticResource CardTitleTextBlockStyle}"
+                    Text="{x:Bind ViewModel.VersionCountText, Mode=OneWay}" />
+                <TextBlock
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Style="{StaticResource CaptionTextBlockStyle}"
+                    Text="{x:Bind ViewModel.StatusText, Mode=OneWay}" />
+            </Grid>
+
+            <Grid Grid.Row="1">
+                <ListView
+                    Background="Transparent"
+                    BorderThickness="0"
+                    ItemsSource="{x:Bind ViewModel.Versions}"
+                    SelectionMode="None">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="MinHeight" Value="0" />
+                            <Setter Property="Padding" Value="0" />
+                            <Setter Property="Margin" Value="0,0,0,12" />
+                            <Setter Property="Background" Value="Transparent" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="models:MinecraftVersionInfo">
+                            <Border Padding="16" Style="{StaticResource CardBorderStyle}">
+                                <Grid ColumnSpacing="16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Style="{StaticResource IconTileBorderStyle}">
+                                        <Image
+                                            Source="{x:Bind IconPath}"
+                                            Stretch="UniformToFill" />
+                                    </Border>
+
+                                    <StackPanel
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Spacing="3">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <TextBlock Style="{StaticResource CardTitleTextBlockStyle}" Text="{x:Bind Id}" />
+                                            <Border Style="{StaticResource PillBorderStyle}">
+                                                <TextBlock
+                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                    Text="{x:Bind TypeDisplay}" />
+                                            </Border>
+                                            <Border
+                                                Style="{StaticResource PillBorderStyle}"
+                                                Visibility="{x:Bind IsInstalled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <TextBlock
+                                                    Foreground="{ThemeResource SystemFillColorSuccessBrush}"
+                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                    Text="已安装" />
+                                            </Border>
+                                        </StackPanel>
+                                        <TextBlock
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                            Text="{x:Bind ReleaseDateDisplay}" />
+                                    </StackPanel>
+
+                                    <Button
+                                        Grid.Column="3"
+                                        VerticalAlignment="Center"
+                                        Click="InstallVersion_Click"
+                                        Content="{x:Bind InstallButtonText}"
+                                        Tag="{x:Bind Id}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <StackPanel
+                    MaxWidth="560"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="8"
+                    Visibility="{x:Bind ViewModel.IsEmpty, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <FontIcon
+                        FontSize="36"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Glyph="&#xE896;"
+                        HorizontalAlignment="Center" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Style="{StaticResource CardTitleTextBlockStyle}"
+                        Text="{x:Bind ViewModel.EmptyStateTitle, Mode=OneWay}" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="{x:Bind ViewModel.EmptyStateDescription, Mode=OneWay}"
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                    <Button
+                        Margin="0,8,0,0"
+                        HorizontalAlignment="Center"
+                        Click="RefreshButton_Click"
+                        Content="重新读取版本清单" />
+                </StackPanel>
+
+                <ProgressRing
+                    Width="36"
+                    Height="36"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
+                    Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            </Grid>
+        </Grid>
+    </Grid>
+</Page>
