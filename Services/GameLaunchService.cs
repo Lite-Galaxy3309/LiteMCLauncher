@@ -109,6 +109,7 @@ public sealed class GameLaunchService
             var gameLanguage = useInstanceSettings
                 ? instanceSettings.GameLanguage
                 : settings.GameLanguage;
+            ApplyGameLanguage(launchPath.BasePath, gameLanguage);
             if (!string.IsNullOrWhiteSpace(gameLanguage))
             {
                 extraGameArguments.Add(new MArgument(["--lang", gameLanguage]));
@@ -203,9 +204,43 @@ public sealed class GameLaunchService
         return null;
     }
 
-    private MinecraftPath CreateLaunchPath(MinecraftInstance instance)
+    private static void ApplyGameLanguage(string gameDirectory, string? language)
     {
-        var gameDirectory = _launcherState.GetGameDirectory(instance);
+        if (string.IsNullOrWhiteSpace(language))
+        {
+            return;
+        }
+
+        try
+        {
+            Directory.CreateDirectory(gameDirectory);
+            var optionsPath = Path.Combine(gameDirectory, "options.txt");
+            var lines = File.Exists(optionsPath)
+                ? File.ReadAllLines(optionsPath).ToList()
+                : [];
+
+            var languageLine = $"lang:{language}";
+            var index = lines.FindIndex(line =>
+                line.StartsWith("lang:", StringComparison.OrdinalIgnoreCase));
+            if (index >= 0)
+            {
+                lines[index] = languageLine;
+            }
+            else
+            {
+                lines.Insert(0, languageLine);
+            }
+
+            File.WriteAllLines(optionsPath, lines);
+        }
+        catch
+        {
+            // Launching must continue even if options.txt is read-only.
+        }
+    }
+
+    private MinecraftPath CreateLaunchPath(MinecraftInstance instance)
+    {        var gameDirectory = _launcherState.GetGameDirectory(instance);
         Directory.CreateDirectory(gameDirectory);
 
         // The game directory is per-instance, while versions, libraries,

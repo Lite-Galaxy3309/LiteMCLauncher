@@ -10,16 +10,23 @@ namespace LiteMCLauncher.ViewModels;
 public sealed class DownloadsViewModel : ObservableObject
 {
     private readonly MinecraftInstallService _installService;
+    private readonly ModLoaderAvailabilityService _availabilityService;
     private List<MinecraftVersionInfo> _allVersions = [];
     private bool _isLoading;
     private string? _errorMessage;
     private string _searchText = string.Empty;
     private string _typeFilter = "全部版本";
     private string? _loaderIconPath;
+    private string _loaderName = "原版";
+    private IReadOnlySet<string>? _supportedGameVersions;
+    private CancellationTokenSource? _loaderCancellation;
 
-    public DownloadsViewModel(MinecraftInstallService installService)
+    public DownloadsViewModel(
+        MinecraftInstallService installService,
+        ModLoaderAvailabilityService? availabilityService = null)
     {
         _installService = installService;
+        _availabilityService = availabilityService ?? AppServices.LoaderAvailability;
     }
 
     public ObservableCollection<MinecraftVersionInfo> Versions { get; } = [];
@@ -45,9 +52,9 @@ public sealed class DownloadsViewModel : ObservableObject
         : $"共 {Versions.Count} 个版本";
 
     public string StatusText => IsLoading
-        ? "正在连接 Mojang..."
+        ? $"正在检测 {_loaderName} 支持的游戏版本..."
         : _errorMessage is not null
-            ? "版本列表读取失败"
+            ? _errorMessage
             : $"{Versions.Count} 个结果";
 
     public string EmptyStateTitle
@@ -73,9 +80,105 @@ public sealed class DownloadsViewModel : ObservableObject
             }
 
             return _allVersions.Count > 0
-                ? "尝试调整搜索关键词或版本类型。"
+                ? _loaderName == "原版"
+                    ? "尝试调整搜索关键词或版本类型。"
+                    : $"当前筛选下没有 {_loaderName} 支持的游戏版本。Forge / NeoForge 通常不支持快照版本。"
                 : "请检查网络连接后点击“刷新列表”。";
         }
+    }
+
+    public async Task SetLoaderAsync(string? loaderName)
+    {
+        var normalized = NormalizeLoaderName(loaderName);
+        _loaderName = normalized;
+        _loaderIconPath = normalized switch
+        {
+            "Fabric" => "ms-appx:///Assets/Loaders/fabric.png",
+            "Forge" => "ms-appx:///Assets/Loaders/forge.png",
+            "NeoForge" => "ms-appx:///Assets/Loaders/neoforge.png",
+            "Quilt" => "ms-appx:///Assets/Loaders/quilt.png",
+            _ => null,
+        };
+
+        _loaderCancellation?.Cancel();
+        _loaderCancellation?.Dispose();
+        _loaderCancellation = null;
+
+        if (normalized == "原版")
+        {
+            _supportedGameVersions = null;
+            _errorMessage = null;
+            ApplyFilter();
+            return;
+        }
+
+        var cancellation = new CancellationTokenSource();
+        _loaderCancellation = cancellation;
+        IsLoading = true;
+        _errorMessage = null;
+        OnPropertyChanged(nameof(StatusText));
+
+        try
+        {
+            var supported = await _availabilityService.GetSupportedGameVersionsAsync(
+                normalized switch
+                {
+                    "Fabric" => ModLoaderType.Fabric,
+                    "Forge" => ModLoaderType.Forge,
+                    "NeoForge" => ModLoaderType.NeoForge,
+                    "Quilt" => ModLoaderType.Quilt,
+                    _ => ModLoaderType.Vanilla,
+                },
+                cancellation.Token);
+
+            if (!cancellation.IsCancellationRequested)
+            {
+                _supportedGameVersions = supported;
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+        catch (Exception exception)
+        {
+            _supportedGameVersions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            _errorMessage = $"检测 {normalized} 支持的版本失败：{exception.Message}";
+        }
+        finally
+        {
+            if (!cancellation.IsCancellationRequested)
+            {
+                IsLoading = false;
+                ApplyFilter();
+            }
+        }
+    }
+
+    private static string NormalizeLoaderName(string? loaderName)
+    {
+        var name = loaderName?.Trim();
+        return name switch
+        {
+            "Fabric" => "Fabric",
+            "Forge" => "Forge",
+            "NeoForge" => "NeoForge",
+            "Quilt" => "Quilt",
+            _ => "原版",
+        };
+    }
+
+    private static string NormalizeTypeFilter(string? value)
+    {
+        var filter = value?.Trim();
+        return filter switch
+        {
+            "All versions" or "全部版本" => "全部版本",
+            "Release" or "正式版" => "正式版",
+            "Snapshot" or "快照" => "快照",
+            "Legacy" or "旧版" => "旧版",
+            _ => "全部版本",
+        };
     }
 
     public async Task LoadAsync()
@@ -123,21 +226,7 @@ public sealed class DownloadsViewModel : ObservableObject
 
     public void SetTypeFilter(string? value)
     {
-        _typeFilter = string.IsNullOrWhiteSpace(value) ? "全部版本" : value;
-        ApplyFilter();
-    }
-
-    public void SetLoader(string? loaderName)
-    {
-        _loaderIconPath = loaderName switch
-        {
-            "Fabric" => "ms-appx:///Assets/Loaders/fabric.png",
-            "Forge" => "ms-appx:///Assets/Loaders/forge.png",
-            "NeoForge" => "ms-appx:///Assets/Loaders/neoforge.png",
-            "Quilt" => "ms-appx:///Assets/Loaders/quilt.png",
-            _ => null,
-        };
-
+        _typeFilter = NormalizeTypeFilter(value);
         ApplyFilter();
     }
 
@@ -175,6 +264,11 @@ public sealed class DownloadsViewModel : ObservableObject
                 string.Equals(version.Type, "old_alpha", StringComparison.OrdinalIgnoreCase)),
             _ => query,
         };
+
+        if (_supportedGameVersions is not null)
+        {
+            query = query.Where(version => _supportedGameVersions.Contains(version.Id));
+        }
 
         Versions.Clear();
         foreach (var version in query.OrderByDescending(version => version.ReleaseTime))

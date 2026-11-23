@@ -39,6 +39,7 @@
             x:Name="NavView"
             Grid.Row="1"
             AlwaysShowHeader="False"
+            Background="{ThemeResource LayerFillColorDefaultBrush}"
             IsBackButtonVisible="Collapsed"
             IsPaneToggleButtonVisible="False"
             IsSettingsVisible="False"

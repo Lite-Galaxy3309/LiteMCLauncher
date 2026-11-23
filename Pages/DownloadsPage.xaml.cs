@@ -62,11 +62,11 @@ public sealed partial class DownloadsPage : Page
         }
     }
 
-    private void LoaderBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private async void LoaderBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (sender is ComboBox { SelectedItem: ComboBoxItem item })
         {
-            ViewModel.SetLoader(item.Content?.ToString());
+            await ViewModel.SetLoaderAsync(item.Content?.ToString());
         }
     }
 
@@ -98,6 +98,20 @@ public sealed partial class DownloadsPage : Page
         if (_installCancellation is not null || XamlRoot is null)
         {
             return;
+        }
+
+        var loader = GetSelectedLoader();
+        string? requestedLoaderVersion = null;
+
+        if (loader != ModLoaderType.Vanilla)
+        {
+            var pick = await PickLoaderVersionAsync(versionId, loader);
+            if (!pick.Confirmed)
+            {
+                return;
+            }
+
+            requestedLoaderVersion = pick.Version;
         }
 
         var cancellation = new CancellationTokenSource();
@@ -175,8 +189,8 @@ public sealed partial class DownloadsPage : Page
 
             var result = await _loaderService.InstallAsync(
                 versionId,
-                GetSelectedLoader(),
-                requestedLoaderVersion: null,
+                loader,
+                requestedLoaderVersion,
                 progress,
                 cancellation.Token);
 
@@ -219,6 +233,81 @@ public sealed partial class DownloadsPage : Page
             cancellation.Dispose();
             _installCancellation = null;
         }
+    }
+
+    private async Task<(bool Confirmed, string? Version)> PickLoaderVersionAsync(
+        string gameVersion,
+        ModLoaderType loader)
+    {
+        if (XamlRoot is null)
+        {
+            return (false, null);
+        }
+
+        IReadOnlyList<LoaderVersionOption> versions;
+        try
+        {
+            versions = await AppServices.LoaderAvailability.GetLoaderVersionsAsync(gameVersion, loader);
+        }
+        catch (Exception exception)
+        {
+            await ShowMessageAsync("获取加载器版本失败", exception.Message);
+            return (false, null);
+        }
+
+        if (versions.Count == 0)
+        {
+            await ShowMessageAsync(
+                "没有可安装的加载器版本",
+                $"没有找到适用于 Minecraft {gameVersion} 的 {loader} 版本。请先切换游戏版本或加载器。");
+            return (false, null);
+        }
+
+        var combo = new ComboBox
+        {
+            ItemsSource = versions,
+            DisplayMemberPath = nameof(LoaderVersionOption.Display),
+            SelectedIndex = 0,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+        };
+
+        var content = new StackPanel
+        {
+            Spacing = 8,
+            Children =
+            {
+                new TextBlock
+                {
+                    Text = $"Minecraft {gameVersion} · 检测到 {versions.Count} 个可安装版本",
+                    TextWrapping = TextWrapping.Wrap,
+                },
+                combo,
+                new TextBlock
+                {
+                    Text = "选择要安装的加载器构建版本，然后点击“安装”。",
+                    TextWrapping = TextWrapping.Wrap,
+                },
+            },
+        };
+
+        var dialog = new ContentDialog
+        {
+            Title = $"选择 {loader} 版本",
+            Content = content,
+            PrimaryButtonText = "安装",
+            CloseButtonText = "取消",
+            DefaultButton = ContentDialogButton.Primary,
+            XamlRoot = XamlRoot,
+        };
+
+        var result = await dialog.ShowAsync();
+        if (result != ContentDialogResult.Primary)
+        {
+            return (false, null);
+        }
+
+        var selected = combo.SelectedItem as LoaderVersionOption;
+        return selected is null ? (false, null) : (true, selected.Version);
     }
 
     private async Task ShowMessageAsync(string title, string message)

@@ -41,7 +41,7 @@
                         <StackPanel Orientation="Horizontal" Spacing="12">
                             <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="LiteMCLauncher" />
                             <Border Style="{StaticResource PillBorderStyle}">
-                                <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="v0.2.0" />
+                                <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="v0.3.0" />
                             </Border>
                         </StackPanel>
                         <TextBlock
@@ -65,7 +65,7 @@
                         <TextBlock
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             Text="当前版本" />
-                        <TextBlock Grid.Column="1" Text="0.2.0" />
+                        <TextBlock Grid.Column="1" Text="0.3.0" />
                     </Grid>
 
                     <Grid ColumnSpacing="16">

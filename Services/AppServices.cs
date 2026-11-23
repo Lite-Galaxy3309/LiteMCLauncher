@@ -21,6 +21,8 @@ public static class AppServices
 
     public static NewsService News { get; } = new();
 
+    public static ModLoaderAvailabilityService LoaderAvailability { get; } = new();
+
     public static LauncherSettingsService Settings { get; } = new();
 
     public static LauncherState LauncherState { get; } = new();
