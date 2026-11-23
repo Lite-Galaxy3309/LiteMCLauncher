@@ -65,6 +65,10 @@ dotnet run --project .\LiteMCLauncher.csproj --launch-profile "LiteMCLauncher (U
 
 账号、实例设置、音乐和日志等启动器数据会写入对应的应用数据目录。请不要把个人账号文件提交到仓库。
 
+## 许可证
+
+本项目使用 [MIT License](LICENSE) 开源，Copyright (c) 2026 Lite-Galaxy3309。
+
 ## 参与者
 
 - **Lite-Galaxy3309 / Galaxy3309** — 项目发起人、需求定义、产品设计与测试

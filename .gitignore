@@ -47,6 +47,13 @@ PublishScripts/
 dist/
 tools/**/payload.zip
 
+# Local account and token data (must never be committed)
+launcher_accounts.json
+accounts.json
+msal_cache.bin
+instance-settings.json
+instance-java.json
+
 # Code analysis and tooling
 _ReSharper*/
 *.DotSettings.user
