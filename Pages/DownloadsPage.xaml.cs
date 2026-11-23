@@ -13,6 +13,7 @@ public sealed partial class DownloadsPage : Page
 
     private CancellationTokenSource? _installCancellation;
     private bool _hasLoaded;
+    private ModLoaderType _selectedLoader = ModLoaderType.Vanilla;
 
     public DownloadsViewModel ViewModel { get; }
 
@@ -66,8 +67,21 @@ public sealed partial class DownloadsPage : Page
     {
         if (sender is ComboBox { SelectedItem: ComboBoxItem item })
         {
-            await ViewModel.SetLoaderAsync(item.Content?.ToString());
+            var loaderName = item.Content?.ToString();
+            _selectedLoader = ParseLoader(loaderName);
+            await ViewModel.SetLoaderAsync(loaderName);
         }
+    }
+
+    private ModLoaderType ParseLoader(string? name)
+    {
+        return name switch
+        {
+            "Fabric" => ModLoaderType.Fabric,
+            "Forge" => ModLoaderType.Forge,
+            "NeoForge" => ModLoaderType.NeoForge,
+            _ => ModLoaderType.Vanilla,
+        };
     }
 
     private async void InstallVersion_Click(object sender, RoutedEventArgs e)
@@ -82,15 +96,7 @@ public sealed partial class DownloadsPage : Page
 
     private ModLoaderType GetSelectedLoader()
     {
-        var name = (LoaderBox.SelectedItem as ComboBoxItem)?.Content?.ToString();
-        return name switch
-        {
-            "Fabric" => ModLoaderType.Fabric,
-            "Forge" => ModLoaderType.Forge,
-            "NeoForge" => ModLoaderType.NeoForge,
-            "Quilt" => ModLoaderType.Quilt,
-            _ => ModLoaderType.Vanilla,
-        };
+        return _selectedLoader;
     }
 
     private async Task InstallVersionAsync(string versionId)
@@ -257,6 +263,7 @@ public sealed partial class DownloadsPage : Page
 
         if (versions.Count == 0)
         {
+            ViewModel.HideVersion(gameVersion);
             await ShowMessageAsync(
                 "没有可安装的加载器版本",
                 $"没有找到适用于 Minecraft {gameVersion} 的 {loader} 版本。请先切换游戏版本或加载器。");

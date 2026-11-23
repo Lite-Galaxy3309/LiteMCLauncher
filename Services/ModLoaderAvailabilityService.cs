@@ -11,15 +11,15 @@ namespace LiteMCLauncher.Services;
 public sealed class ModLoaderAvailabilityService
 {
     private const string FabricGamesUrl = "https://meta.fabricmc.net/v2/versions/game";
-    private const string QuiltGamesUrl = "https://meta.quiltmc.org/v3/versions/game";
     private const string FabricLoaderUrl = "https://meta.fabricmc.net/v2/versions/loader";
-    private const string QuiltLoaderUrl = "https://meta.quiltmc.org/v3/versions/loader";
     private const string ForgePromotionsUrl =
         "https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json";
     private const string ForgeMetadataUrl =
         "https://files.minecraftforge.net/net/minecraftforge/forge/maven-metadata.json";
     private const string NeoForgeVersionsUrl =
         "https://maven.neoforged.net/api/maven/versions/releases/net/neoforged/neoforge";
+    private const string NeoForgeBmclUrl =
+        "https://bmclapi2.bangbang93.com/neoforge/meta/api/maven/details/releases/net/neoforged/neoforge";
 
     private static readonly HttpClient HttpClient = CreateHttpClient();
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -53,7 +53,6 @@ public sealed class ModLoaderAvailabilityService
             var versions = loader switch
             {
                 ModLoaderType.Fabric => await GetMetaGameVersionsAsync(FabricGamesUrl, cancellationToken),
-                ModLoaderType.Quilt => await GetMetaGameVersionsAsync(QuiltGamesUrl, cancellationToken),
                 ModLoaderType.Forge => await GetForgeGameVersionsAsync(cancellationToken),
                 ModLoaderType.NeoForge => await GetNeoForgeGameVersionsAsync(cancellationToken),
                 _ => new HashSet<string>(StringComparer.OrdinalIgnoreCase),
@@ -81,7 +80,6 @@ public sealed class ModLoaderAvailabilityService
         return loader switch
         {
             ModLoaderType.Fabric => await GetFabricLoaderVersionsAsync(gameVersion, cancellationToken),
-            ModLoaderType.Quilt => await GetQuiltLoaderVersionsAsync(gameVersion, cancellationToken),
             ModLoaderType.Forge => await GetForgeLoaderVersionsAsync(gameVersion, cancellationToken),
             ModLoaderType.NeoForge => await GetNeoForgeLoaderVersionsAsync(gameVersion, cancellationToken),
             _ => [],
@@ -115,35 +113,6 @@ public sealed class ModLoaderAvailabilityService
                 $"Fabric Loader {version}",
                 version,
                 true))
-            .ToList();
-    }
-
-    private static async Task<IReadOnlyList<LoaderVersionOption>> GetQuiltLoaderVersionsAsync(
-        string gameVersion,
-        CancellationToken cancellationToken)
-    {
-        var response = await HttpClient.GetAsync(
-            $"{QuiltLoaderUrl}/{Uri.EscapeDataString(gameVersion)}", cancellationToken);
-        response.EnsureSuccessStatusCode();
-
-        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        var entries = await JsonSerializer.DeserializeAsync<List<QuiltLoaderEntry>>(
-            stream, JsonOptions, cancellationToken);
-
-        var loaders = entries?
-            .Select(entry => entry.Loader)
-            .Where(loader => !string.IsNullOrWhiteSpace(loader?.Version))
-            .OrderByDescending(loader => loader!.Version, VersionComparer)
-            .ToList() ?? [];
-
-        var stable = loaders
-            .Where(loader => !IsPrerelease(loader!.Version))
-            .ToList();
-        var candidates = stable.Count > 0 ? stable : loaders;
-        var versions = LimitToLatestVersionLine(
-            candidates.Select(loader => loader!.Version!).ToList());
-        return versions
-            .Select(version => new LoaderVersionOption($"Quilt Loader {version}", version))
             .ToList();
     }
 
@@ -301,13 +270,41 @@ public sealed class ModLoaderAvailabilityService
             return _neoForgeVersions;
         }
 
-        var response = await HttpClient.GetAsync(NeoForgeVersionsUrl, cancellationToken);
-        response.EnsureSuccessStatusCode();
+        // The official NeoForged Maven host rejects some .NET TLS handshakes.
+        // BMCLAPI mirrors the same Maven directory and is the primary source.
+        try
+        {
+            var response = await HttpClient.GetAsync(NeoForgeBmclUrl, cancellationToken);
+            response.EnsureSuccessStatusCode();
 
-        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        var feed = await JsonSerializer.DeserializeAsync<NeoForgeVersionFeed>(
-            stream, JsonOptions, cancellationToken);
-        _neoForgeVersions = feed?.Versions ?? [];
+            await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            var feed = await JsonSerializer.DeserializeAsync<NeoForgeBmclFeed>(
+                stream, JsonOptions, cancellationToken);
+            var versions = feed?.Files?
+                .Where(file => string.Equals(file.Type, "DIRECTORY", StringComparison.OrdinalIgnoreCase))
+                .Select(file => file.Name)
+                .Where(name => !string.IsNullOrWhiteSpace(name))
+                .Select(name => name!)
+                .ToList();
+
+            if (versions is { Count: > 0 })
+            {
+                _neoForgeVersions = versions;
+                return versions;
+            }
+        }
+        catch (Exception exception) when (
+            exception is HttpRequestException or JsonException or TaskCanceledException)
+        {
+            // Fall back to the official Maven API below.
+        }
+
+        var officialResponse = await HttpClient.GetAsync(NeoForgeVersionsUrl, cancellationToken);
+        officialResponse.EnsureSuccessStatusCode();
+        await using var officialStream = await officialResponse.Content.ReadAsStreamAsync(cancellationToken);
+        var officialFeed = await JsonSerializer.DeserializeAsync<NeoForgeVersionFeed>(
+            officialStream, JsonOptions, cancellationToken);
+        _neoForgeVersions = officialFeed?.Versions ?? [];
         return _neoForgeVersions;
     }
 
@@ -336,20 +333,8 @@ public sealed class ModLoaderAvailabilityService
             .ToList();
     }
 
-    private static bool IsPrerelease(string? version)
+    private static string? MapNeoForgeGameVersion(string neoVersion)
     {
-        if (string.IsNullOrWhiteSpace(version))
-        {
-            return false;
-        }
-
-        return version.Contains("-beta", StringComparison.OrdinalIgnoreCase) ||
-               version.Contains("-alpha", StringComparison.OrdinalIgnoreCase) ||
-               version.Contains("-pre", StringComparison.OrdinalIgnoreCase) ||
-               version.Contains("-rc", StringComparison.OrdinalIgnoreCase);
-    }
-
-    private static string? MapNeoForgeGameVersion(string neoVersion)    {
         // NeoForge uses versions such as:
         //   1.20.4 -> 20.4.237, 1.21.1 -> 21.1.209,
         //   26.1.2 -> 26.1.2.71, 26.2 -> 26.2.0.57.
@@ -458,16 +443,6 @@ public sealed class ModLoaderAvailabilityService
         public bool Stable { get; set; }
     }
 
-    private sealed class QuiltLoaderEntry
-    {
-        public QuiltLoaderInfo? Loader { get; set; }
-    }
-
-    private sealed class QuiltLoaderInfo
-    {
-        public string? Version { get; set; }
-    }
-
     private sealed class ForgePromotionsFeed
     {
         public Dictionary<string, string>? Promos { get; set; }
@@ -476,5 +451,17 @@ public sealed class ModLoaderAvailabilityService
     private sealed class NeoForgeVersionFeed
     {
         public List<string>? Versions { get; set; }
+    }
+
+    private sealed class NeoForgeBmclFeed
+    {
+        public List<NeoForgeBmclEntry>? Files { get; set; }
+    }
+
+    private sealed class NeoForgeBmclEntry
+    {
+        public string? Name { get; set; }
+
+        public string? Type { get; set; }
     }
 }

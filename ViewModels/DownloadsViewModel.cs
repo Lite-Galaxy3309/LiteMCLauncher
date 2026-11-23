@@ -19,6 +19,7 @@ public sealed class DownloadsViewModel : ObservableObject
     private string? _loaderIconPath;
     private string _loaderName = "原版";
     private IReadOnlySet<string>? _supportedGameVersions;
+    private readonly HashSet<string> _unavailableGameVersions = new(StringComparer.OrdinalIgnoreCase);
     private CancellationTokenSource? _loaderCancellation;
 
     public DownloadsViewModel(
@@ -91,12 +92,12 @@ public sealed class DownloadsViewModel : ObservableObject
     {
         var normalized = NormalizeLoaderName(loaderName);
         _loaderName = normalized;
+        _unavailableGameVersions.Clear();
         _loaderIconPath = normalized switch
         {
             "Fabric" => "ms-appx:///Assets/Loaders/fabric.png",
             "Forge" => "ms-appx:///Assets/Loaders/forge.png",
             "NeoForge" => "ms-appx:///Assets/Loaders/neoforge.png",
-            "Quilt" => "ms-appx:///Assets/Loaders/quilt.png",
             _ => null,
         };
 
@@ -111,6 +112,11 @@ public sealed class DownloadsViewModel : ObservableObject
             ApplyFilter();
             return;
         }
+
+        // Hide the previous loader's results immediately; otherwise a version
+        // that has no installable build can remain visible during detection.
+        _supportedGameVersions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        ApplyFilter();
 
         var cancellation = new CancellationTokenSource();
         _loaderCancellation = cancellation;
@@ -153,6 +159,17 @@ public sealed class DownloadsViewModel : ObservableObject
                 ApplyFilter();
             }
         }
+    }
+
+    public void HideVersion(string versionId)
+    {
+        if (string.IsNullOrWhiteSpace(versionId))
+        {
+            return;
+        }
+
+        _unavailableGameVersions.Add(versionId);
+        ApplyFilter();
     }
 
     private static string NormalizeLoaderName(string? loaderName)
@@ -269,6 +286,8 @@ public sealed class DownloadsViewModel : ObservableObject
         {
             query = query.Where(version => _supportedGameVersions.Contains(version.Id));
         }
+
+        query = query.Where(version => !_unavailableGameVersions.Contains(version.Id));
 
         Versions.Clear();
         foreach (var version in query.OrderByDescending(version => version.ReleaseTime))

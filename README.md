@@ -11,7 +11,7 @@ LiteMCLauncher 是一个面向 Windows 的轻量级 Minecraft 启动器，使用
 - Microsoft 账号设备码登录、离线账号、多账号切换
 - RefreshToken 持久化与启动时静默刷新
 - 多实例管理，实例独立游戏目录
-- 原版、Fabric、Forge、NeoForge、Quilt 安装
+- 原版、Fabric、Forge、NeoForge 安装
 - 实例图标：原版草方块、加载器图标；下载页按版本类型显示草方块 / 命令方块 / 石头
 - 版本下载、资源完整性与 Java 版本启动前检查
 - Java 8 / 17 / 21 / 25 一键安装，支持清华 TUNA 镜像与 Adoptium 官方源
