@@ -65,6 +65,24 @@ dotnet run --project .\LiteMCLauncher.csproj --launch-profile "LiteMCLauncher (U
 
 账号、实例设置、音乐和日志等启动器数据会写入对应的应用数据目录。请不要把个人账号文件提交到仓库。
 
+## 鸣谢与社区项目
+
+LiteMCLauncher 的实现离不开以下社区项目、平台和文档：
+
+| 项目 | 用途 | 地址 |
+|---|---|---|
+| CmlLib.Core | Minecraft 版本安装、启动参数与进程构建 | https://github.com/CmlLib/CmlLib.Core |
+| CmlLib.Core.Auth.Microsoft | Microsoft / Xbox / Minecraft 登录链路 | https://github.com/CmlLib/CmlLib.Core.Auth.Microsoft |
+| XboxAuthNet | Xbox Live 认证辅助库 | https://github.com/CmlLib/XboxAuthNet |
+| Windows App SDK / WinUI 3 | Windows 桌面 UI 与窗口能力 | https://github.com/microsoft/WindowsAppSDK |
+| Microsoft.Identity.Client (MSAL.NET) | 设备码登录、Token 缓存与静默刷新 | https://github.com/AzureAD/microsoft-authentication-library-for-dotnet |
+| Fabric Meta / Fabric Loader | Fabric 游戏版本与加载器版本元数据 | https://meta.fabricmc.net |
+| MinecraftForge | Forge 构建元数据与安装器 | https://github.com/MinecraftForge/MinecraftForge |
+| NeoForged / NeoForge | NeoForge 构建元数据与安装器 | https://github.com/neoforged/NeoForge |
+| Modrinth API | Mod 搜索、项目详情与下载信息 | https://docs.modrinth.com |
+| BMCLAPI | BMCLAPI 镜像服务；仅在源设置为 BMCLAPI 时使用 | https://bmclapidoc.bangbang93.com |
+| Mojang Launcher Content | Minecraft 官方新闻与 Java 更新内容 | https://launchercontent.mojang.com |
+
 ## 许可证
 
 本项目使用 [MIT License](LICENSE) 开源，Copyright (c) 2026 Lite-Galaxy3309。

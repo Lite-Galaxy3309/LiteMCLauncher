@@ -76,7 +76,7 @@
                         <TextBlock
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             Text="构建时间" />
-                        <TextBlock Grid.Column="1" Text="2026-11-23" />
+                        <TextBlock Grid.Column="1" Text="2026-11-24" />
                     </Grid>
 
                     <Grid ColumnSpacing="16">
@@ -127,6 +127,267 @@
                         Style="{StaticResource BodyTextBlockStyle}"
                         Text="本项目仅用于学习与个人使用，请在遵守 Minecraft 最终用户许可协议的前提下使用。"
                         TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}">
+                <StackPanel Spacing="14">
+                    <TextBlock Style="{StaticResource CardTitleTextBlockStyle}" Text="鸣谢" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="感谢以下开源项目、平台和文档为 LiteMCLauncher 提供支持。"
+                        TextWrapping="Wrap" />
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="42" Height="42" Style="{StaticResource IconTileBorderStyle}">
+                            <FontIcon FontSize="20" Glyph="&#xE7FC;" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="CmlLib.Core" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Minecraft 版本安装、启动参数和进程构建的核心库。"
+                                TextWrapping="Wrap" />
+                            <HyperlinkButton
+                                Padding="0"
+                                Content="GitHub · CmlLib/CmlLib.Core"
+                                NavigateUri="https://github.com/CmlLib/CmlLib.Core" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="42" Height="42" Style="{StaticResource IconTileBorderStyle}">
+                            <FontIcon FontSize="20" Glyph="&#xE72E;" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="CmlLib.Core.Auth.Microsoft" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Microsoft / Xbox / Minecraft 登录与账号会话链路。"
+                                TextWrapping="Wrap" />
+                            <HyperlinkButton
+                                Padding="0"
+                                Content="GitHub · CmlLib/CmlLib.Core.Auth.Microsoft"
+                                NavigateUri="https://github.com/CmlLib/CmlLib.Core.Auth.Microsoft" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="42" Height="42" Style="{StaticResource IconTileBorderStyle}">
+                            <FontIcon FontSize="20" Glyph="&#xE770;" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Windows App SDK / WinUI 3" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="启动器的现代 Windows 桌面 UI 与窗口能力。"
+                                TextWrapping="Wrap" />
+                            <HyperlinkButton
+                                Padding="0"
+                                Content="GitHub · microsoft/WindowsAppSDK"
+                                NavigateUri="https://github.com/microsoft/WindowsAppSDK" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="42" Height="42" Style="{StaticResource IconTileBorderStyle}">
+                            <FontIcon FontSize="20" Glyph="&#xE72E;" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Microsoft.Identity.Client (MSAL.NET)" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="设备码登录、Token 缓存和静默刷新。"
+                                TextWrapping="Wrap" />
+                            <HyperlinkButton
+                                Padding="0"
+                                Content="GitHub · AzureAD/microsoft-authentication-library-for-dotnet"
+                                NavigateUri="https://github.com/AzureAD/microsoft-authentication-library-for-dotnet" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="42" Height="42" Style="{StaticResource IconTileBorderStyle}">
+                            <FontIcon FontSize="20" Glyph="&#xE7FC;" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="XboxAuthNet" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Xbox Live 与 Minecraft 认证链路的辅助库。"
+                                TextWrapping="Wrap" />
+                            <HyperlinkButton
+                                Padding="0"
+                                Content="GitHub · CmlLib/XboxAuthNet"
+                                NavigateUri="https://github.com/CmlLib/XboxAuthNet" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="42" Height="42" Style="{StaticResource IconTileBorderStyle}">
+                            <FontIcon FontSize="20" Glyph="&#xE7FC;" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Fabric Meta / Fabric Loader" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Fabric 游戏版本与 Loader 版本元数据。"
+                                TextWrapping="Wrap" />
+                            <HyperlinkButton
+                                Padding="0"
+                                Content="https://meta.fabricmc.net"
+                                NavigateUri="https://meta.fabricmc.net" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="42" Height="42" Style="{StaticResource IconTileBorderStyle}">
+                            <Image
+                                Width="28"
+                                Height="28"
+                                Source="ms-appx:///Assets/Loaders/forge.png"
+                                Stretch="Uniform" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="MinecraftForge" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Forge 构建元数据与安装器。"
+                                TextWrapping="Wrap" />
+                            <HyperlinkButton
+                                Padding="0"
+                                Content="GitHub · MinecraftForge/MinecraftForge"
+                                NavigateUri="https://github.com/MinecraftForge/MinecraftForge" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="42" Height="42" Style="{StaticResource IconTileBorderStyle}">
+                            <Image
+                                Width="28"
+                                Height="28"
+                                Source="ms-appx:///Assets/Loaders/neoforge.png"
+                                Stretch="Uniform" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="NeoForged / NeoForge" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="NeoForge 构建元数据与安装器。"
+                                TextWrapping="Wrap" />
+                            <HyperlinkButton
+                                Padding="0"
+                                Content="GitHub · neoforged/NeoForge"
+                                NavigateUri="https://github.com/neoforged/NeoForge" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="42" Height="42" Style="{StaticResource IconTileBorderStyle}">
+                            <FontIcon FontSize="20" Glyph="&#xE8F1;" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Modrinth API" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Mod 搜索、项目详情和下载信息。"
+                                TextWrapping="Wrap" />
+                            <HyperlinkButton
+                                Padding="0"
+                                Content="https://docs.modrinth.com"
+                                NavigateUri="https://docs.modrinth.com" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="42" Height="42" Style="{StaticResource IconTileBorderStyle}">
+                            <FontIcon FontSize="20" Glyph="&#xE753;" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="BMCLAPI" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="BMCLAPI 镜像服务；仅在设置中切换为 BMCLAPI 源时使用。"
+                                TextWrapping="Wrap" />
+                            <HyperlinkButton
+                                Padding="0"
+                                Content="https://bmclapidoc.bangbang93.com"
+                                NavigateUri="https://bmclapidoc.bangbang93.com" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="42" Height="42" Style="{StaticResource IconTileBorderStyle}">
+                            <FontIcon FontSize="20" Glyph="&#xE8D6;" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Mojang Launcher Content" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Minecraft 官方新闻、Java 更新说明与启动器内容图片。"
+                                TextWrapping="Wrap" />
+                            <HyperlinkButton
+                                Padding="0"
+                                Content="https://launchercontent.mojang.com"
+                                NavigateUri="https://launchercontent.mojang.com" />
+                        </StackPanel>
+                    </Grid>
                 </StackPanel>
             </Border>
         </StackPanel>
