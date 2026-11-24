@@ -13,7 +13,9 @@ public sealed class InstanceManageViewModel : ObservableObject
 {
     private static readonly SolidColorBrush WarnBrush = new(Color.FromArgb(255, 245, 197, 66));
     private static readonly SolidColorBrush ErrorBrush = new(Color.FromArgb(255, 255, 107, 107));
+    private static readonly SolidColorBrush InfoBrush = new(Color.FromArgb(255, 126, 211, 160));
     private static readonly SolidColorBrush StackTraceBrush = new(Color.FromArgb(255, 127, 219, 255));
+    private static readonly SolidColorBrush DebugBrush = new(Color.FromArgb(255, 160, 160, 160));
 
     private readonly InstanceContentService _contentService;
     private readonly LauncherState _launcherState;
@@ -30,6 +32,7 @@ public sealed class InstanceManageViewModel : ObservableObject
     private string _instanceSettingsStatus = string.Empty;
     private string _logPathDisplay = "尚未找到日志";
     private string _logStatus = "还没有读取日志";
+    private LogFileItem? _selectedLogFile;
 
     public InstanceManageViewModel(
         InstanceContentService contentService,
@@ -53,6 +56,8 @@ public sealed class InstanceManageViewModel : ObservableObject
     public ObservableCollection<InstanceJavaOption> JavaOptions { get; } = [];
 
     public ObservableCollection<LogLine> Logs { get; } = [];
+
+    public ObservableCollection<LogFileItem> LogFiles { get; } = [];
 
     public IReadOnlyList<LanguageOption> LanguageOptions { get; } =
     [
@@ -203,6 +208,20 @@ public sealed class InstanceManageViewModel : ObservableObject
     {
         get => _logPathDisplay;
         private set => SetProperty(ref _logPathDisplay, value);
+    }
+
+    public LogFileItem? SelectedLogFile
+    {
+        get => _selectedLogFile;
+        set
+        {
+            if (!SetProperty(ref _selectedLogFile, value) || value is null)
+            {
+                return;
+            }
+
+            _ = LoadLogFileAsync(value);
+        }
     }
 
     public string LogStatus
@@ -415,25 +434,58 @@ public sealed class InstanceManageViewModel : ObservableObject
             return;
         }
 
-        var logPath = FindLatestLogPath();
-        LogPathDisplay = logPath ?? "尚未找到日志";
-        Logs.Clear();
-
-        if (logPath is null)
+        try
         {
-            LogStatus = "尚未找到 latest.log 或其他日志文件。启动一次游戏后即可查看。";
+            var files = await Task.Run(EnumerateLogFiles);
+            var selectedPath = SelectedLogFile?.FullPath;
+            LogFiles.Clear();
+            foreach (var file in files)
+            {
+                LogFiles.Add(file);
+            }
+
+            _selectedLogFile = LogFiles.FirstOrDefault(file =>
+                                    string.Equals(file.FullPath, selectedPath, StringComparison.OrdinalIgnoreCase))
+                                ?? LogFiles.FirstOrDefault(file =>
+                                    string.Equals(file.Name, "latest.log", StringComparison.OrdinalIgnoreCase))
+                                ?? LogFiles.FirstOrDefault();
+            OnPropertyChanged(nameof(SelectedLogFile));
+
+            if (_selectedLogFile is null)
+            {
+                Logs.Clear();
+                LogPathDisplay = "尚未找到日志";
+                LogStatus = "尚未找到日志文件。启动一次游戏后即可查看。";
+                return;
+            }
+
+            LogPathDisplay = _selectedLogFile.FullPath;
+            await LoadLogFileAsync(_selectedLogFile);
+        }
+        catch (Exception exception)
+        {
+            LogStatus = $"读取日志列表失败：{exception.Message}";
+        }
+    }
+
+    private async Task LoadLogFileAsync(LogFileItem file)
+    {
+        if (_instance is null)
+        {
             return;
         }
 
+        Logs.Clear();
+        LogPathDisplay = file.FullPath;
         try
         {
-            var lines = await Task.Run(() => ReadLastLines(logPath, 4000));
+            var lines = await Task.Run(() => ReadAllLogLines(file.FullPath));
             foreach (var line in lines)
             {
                 Logs.Add(CreateLogLine(line));
             }
 
-            LogStatus = $"{Path.GetFileName(logPath)} · 共 {Logs.Count} 行（最多显示最近 4000 行）";
+            LogStatus = $"{file.Name} · 共 {Logs.Count} 行 · 全部内容";
         }
         catch (Exception exception)
         {
@@ -441,52 +493,62 @@ public sealed class InstanceManageViewModel : ObservableObject
         }
     }
 
-    private string? FindLatestLogPath()
+    private IReadOnlyList<LogFileItem> EnumerateLogFiles()
     {
         var directory = LogsDirectory;
         if (!Directory.Exists(directory))
         {
-            return null;
-        }
-
-        var latest = Path.Combine(directory, "latest.log");
-        if (File.Exists(latest))
-        {
-            return latest;
+            return [];
         }
 
         try
         {
             return Directory.EnumerateFiles(directory, "*.log*")
-                .OrderByDescending(File.GetLastWriteTimeUtc)
-                .FirstOrDefault();
+                .Select(path =>
+                {
+                    var info = new FileInfo(path);
+                    return new LogFileItem
+                    {
+                        Name = info.Name,
+                        FullPath = info.FullName,
+                        ModifiedAt = new DateTimeOffset(info.LastWriteTimeUtc),
+                    };
+                })
+                .OrderByDescending(file =>
+                    string.Equals(file.Name, "latest.log", StringComparison.OrdinalIgnoreCase))
+                .ThenByDescending(file => file.ModifiedAt)
+                .ToList();
         }
         catch
         {
-            return null;
+            return [];
         }
     }
 
-    private static IReadOnlyList<string> ReadLastLines(string path, int maxLines)
+    private static IReadOnlyList<string> ReadAllLogLines(string path)
     {
-        var buffer = new Queue<string>(maxLines);
-        using var reader = new StreamReader(path, detectEncodingFromByteOrderMarks: true);
-        while (reader.ReadLine() is { } line)
+        var lines = new List<string>();
+        Stream stream = File.OpenRead(path);
+        try
         {
-            if (line.Length > 8000)
+            if (path.EndsWith(".gz", StringComparison.OrdinalIgnoreCase))
             {
-                line = line[..8000];
+                stream = new System.IO.Compression.GZipStream(
+                    stream, System.IO.Compression.CompressionMode.Decompress);
             }
 
-            if (buffer.Count == maxLines)
+            using var reader = new StreamReader(stream, detectEncodingFromByteOrderMarks: true);
+            while (reader.ReadLine() is { } line)
             {
-                buffer.Dequeue();
+                lines.Add(line.Length > 16000 ? line[..16000] : line);
             }
-
-            buffer.Enqueue(line);
+        }
+        finally
+        {
+            stream.Dispose();
         }
 
-        return buffer.ToList();
+        return lines;
     }
 
     private static LogLine CreateLogLine(string line)
@@ -503,6 +565,17 @@ public sealed class InstanceManageViewModel : ObservableObject
         if (line.Contains("WARN", StringComparison.OrdinalIgnoreCase))
         {
             return new LogLine { Text = line, Foreground = WarnBrush };
+        }
+
+        if (line.Contains("INFO", StringComparison.OrdinalIgnoreCase))
+        {
+            return new LogLine { Text = line, Foreground = InfoBrush };
+        }
+
+        if (line.Contains("DEBUG", StringComparison.OrdinalIgnoreCase) ||
+            line.Contains("TRACE", StringComparison.OrdinalIgnoreCase))
+        {
+            return new LogLine { Text = line, Foreground = DebugBrush };
         }
 
         if (trimmed.StartsWith("at ", StringComparison.Ordinal) ||

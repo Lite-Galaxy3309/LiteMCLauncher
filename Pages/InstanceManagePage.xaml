@@ -307,7 +307,12 @@
                                         <TextBlock
                                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                             Style="{StaticResource CaptionTextBlockStyle}"
-                                            Text="最近一次日志" />
+                                            Text="日志文件" />
+                                        <ComboBox
+                                            ItemsSource="{x:Bind ViewModel.LogFiles}"
+                                            SelectedItem="{x:Bind ViewModel.SelectedLogFile, Mode=TwoWay}"
+                                            DisplayMemberPath="Name"
+                                            HorizontalAlignment="Stretch" />
                                         <TextBlock
                                             IsTextSelectionEnabled="True"
                                             Text="{x:Bind ViewModel.LogPathDisplay, Mode=OneWay}"

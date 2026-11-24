@@ -9,5 +9,5 @@ public sealed record JavaRuntime(string Name, string Version, string HomePath)
 
     public string JavaWExecutable => Path.Combine(HomePath, "bin", "javaw.exe");
 
-    public string PreferredExecutable => File.Exists(JavaWExecutable) ? JavaWExecutable : JavaExecutable;
+    public string PreferredExecutable => JavaExecutable;
 }

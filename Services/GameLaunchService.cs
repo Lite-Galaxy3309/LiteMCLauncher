@@ -81,6 +81,12 @@ public sealed class GameLaunchService
                     "没有可用的 Java 运行时。请先在“设置 > Java 管理”中安装 Java 8、17、21 或 25，或指定 Java 路径。");
             }
 
+            if (!JavaService.ValidateRuntime(javaPath, out var javaValidationOutput))
+            {
+                throw new InvalidOperationException(
+                    $"选中的 Java 无法运行，请重新安装或改选其他 Java。{javaValidationOutput}".Trim());
+            }
+
             var launchPath = CreateLaunchPath(instance);
             tracker.ReportStage($"正在检查游戏资源完整性并准备启动 {instance.DisplayName}...");
 
@@ -156,6 +162,19 @@ public sealed class GameLaunchService
 
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.CreateNoWindow = true;
+
+            try
+            {
+                Directory.CreateDirectory(AppPaths.DataDirectory);
+                File.WriteAllText(
+                    Path.Combine(AppPaths.DataDirectory, "last-launch.txt"),
+                    $"Java: {javaPath}{Environment.NewLine}" +
+                    $"Executable: {process.StartInfo.FileName}{Environment.NewLine}" +
+                    $"Arguments: {process.StartInfo.Arguments}");
+            }
+            catch
+            {
+            }
 
             if (!process.Start())
             {

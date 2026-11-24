@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO.Compression;
 using System.Net;
 using System.Runtime.InteropServices;
@@ -204,6 +205,12 @@ public sealed class JavaService
 
         if (File.Exists(javaExecutable))
         {
+            if (!ValidateRuntime(installDirectory, out var existingOutput))
+            {
+                throw new InvalidDataException(
+                    $"已安装的 Java 无法运行，请在设置中删除后重新安装。{existingOutput}".Trim());
+            }
+
             progress?.Report(new JavaDownloadProgress(100, "该版本已经安装。"));
             return new JavaRuntime(directoryName, release.SemanticVersion, installDirectory);
         }
@@ -238,6 +245,13 @@ public sealed class JavaService
             }
 
             Directory.Move(extractedHome, installDirectory);
+
+            if (!ValidateRuntime(installDirectory, out var validationOutput))
+            {
+                TryDeleteDirectory(installDirectory);
+                throw new InvalidDataException(
+                    $"下载的 Java 无法运行，已删除不完整的安装。{validationOutput}".Trim());
+            }
 
             progress?.Report(new JavaDownloadProgress(100, "Java 安装完成。"));
             return new JavaRuntime(directoryName, release.SemanticVersion, installDirectory);
@@ -416,6 +430,14 @@ public sealed class JavaService
     private static IEnumerable<string> GetJavaSearchRoots()
     {
         var roots = new List<string> { AppPaths.JavaDirectory };
+        var legacyJavaDirectory = Path.Combine(AppPaths.DataDirectory, "java");
+        if (!string.Equals(
+                Path.GetFullPath(legacyJavaDirectory),
+                Path.GetFullPath(AppPaths.JavaDirectory),
+                StringComparison.OrdinalIgnoreCase))
+        {
+            roots.Add(legacyJavaDirectory);
+        }
         var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
         var programFilesX86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
         var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
@@ -668,6 +690,63 @@ public sealed class JavaService
         }
     }
 
+    public static bool ValidateRuntime(string javaHomeOrExecutable, out string output)
+    {
+        output = string.Empty;
+        var executable = Directory.Exists(javaHomeOrExecutable)
+            ? Path.Combine(javaHomeOrExecutable, "bin", "java.exe")
+            : javaHomeOrExecutable;
+
+        if (!File.Exists(executable))
+        {
+            output = "找不到 java.exe。";
+            return false;
+        }
+
+        try
+        {
+            using var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = executable,
+                    Arguments = "-version",
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                },
+            };
+
+            process.Start();
+            var stdout = process.StandardOutput.ReadToEnd();
+            var stderr = process.StandardError.ReadToEnd();
+            if (!process.WaitForExit(15000))
+            {
+                try
+                {
+                    process.Kill(entireProcessTree: true);
+                }
+                catch
+                {
+                }
+
+                output = "java -version 超时。";
+                return false;
+            }
+
+            output = string.Join(
+                Environment.NewLine,
+                new[] { stdout, stderr }.Where(value => !string.IsNullOrWhiteSpace(value)));
+            return process.ExitCode == 0;
+        }
+        catch (Exception exception)
+        {
+            output = exception.Message;
+            return false;
+        }
+    }
+
     private static string FindJdkHome(string extractionRoot)
     {
         if (File.Exists(Path.Combine(extractionRoot, "bin", "java.exe")))
@@ -712,17 +791,9 @@ public sealed class JavaService
 
     private static string GetInstallDirectoryName(JavaRelease release)
     {
-        var name = string.IsNullOrWhiteSpace(release.ReleaseName)
-            ? $"temurin-{release.FeatureVersion}"
-            : release.ReleaseName;
-
-        var invalidChars = Path.GetInvalidFileNameChars();
-        var sanitized = new string(name.Select(character =>
-            invalidChars.Contains(character) ? '_' : character).ToArray()).Trim();
-
-        return string.IsNullOrWhiteSpace(sanitized)
-            ? $"temurin-{release.FeatureVersion}"
-            : sanitized;
+        // Managed runtimes live in .minecraft/java and use one stable folder
+        // per required major version: OpenJDK-8 / 17 / 21 / 25.
+        return $"OpenJDK-{release.FeatureVersion}";
     }
 
     private static string VersionSortKey(string fileName)

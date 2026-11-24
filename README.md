@@ -14,11 +14,12 @@ LiteMCLauncher 是一个面向 Windows 的轻量级 Minecraft 启动器，使用
 - 原版、Fabric、Forge、NeoForge 安装
 - 实例图标：原版草方块、加载器图标；下载页按版本类型显示草方块 / 命令方块 / 石头
 - 版本下载、资源完整性与 Java 版本启动前检查
-- Java 8 / 17 / 21 / 25 一键安装，支持清华 TUNA 镜像与 Adoptium 官方源
+- Java 下载运行时启动前会执行 `java -version` 校验，并使用真实的 `java.exe` 路径启动游戏
+- Java 8 / 17 / 21 / 25 一键安装，统一安装到 `.minecraft/java/OpenJDK-版本号`，支持清华 TUNA 镜像与 Adoptium 官方源
 - 全局 Java 自动检测；按游戏版本自动选择 Java 8 / 17 / 21+
 - 实例特定游戏设置：Java、内存、JVM 参数、游戏语言
 - 资源管理：世界、资源包、光影包、Mods、日志
-- 最近一次日志查看，WARN / ERROR / `at ...` 堆栈着色
+- 日志文件选择：查看实例全部日志文件；INFO 绿色、WARN 黄色、ERROR 红色、`at ...` 堆栈蓝色
 - 本地音乐播放：播放列表、专辑封面、循环模式、启动器/游戏启动时自动播放
 - 在线音乐：网易云音乐搜索、播放、最近播放与搜索历史；可填写 MUSIC_U Cookie 登录自己的账号
 - Mojang 官方新闻与 Java 更新，支持在启动器内阅读完整正文和图片

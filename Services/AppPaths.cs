@@ -15,7 +15,7 @@ public static class AppPaths
 
     public static string DataDirectory { get; } = ResolveDataDirectory();
 
-    public static string JavaDirectory => Path.Combine(DataDirectory, "java");
+    public static string JavaDirectory => Path.Combine(MinecraftDirectory, "java");
 
     public static string AccountsFile => Path.Combine(DataDirectory, "accounts.json");
 
