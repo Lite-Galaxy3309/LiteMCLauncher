@@ -1,5 +1,4 @@
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using System.Runtime.CompilerServices;
@@ -584,6 +583,14 @@ public static class LauncherLanguageService
         }
     }
 
+    private static void TranslateSelectedComboBoxItem(ComboBox comboBox)
+    {
+        if (comboBox.SelectedItem is ComboBoxItem { Content: string text } selected)
+        {
+            selected.Content = Translate(text);
+        }
+    }
+
     private static void TranslateComboBoxItems(ComboBox comboBox)
     {
         var selectedIndex = comboBox.SelectedIndex;
@@ -599,7 +606,7 @@ public static class LauncherLanguageService
             }
         }
 
-        if (selectedIndex >= 0)
+        if (selectedIndex >= 0 && comboBox.SelectedIndex != selectedIndex)
         {
             comboBox.SelectedIndex = selectedIndex;
         }
@@ -620,20 +627,7 @@ public static class LauncherLanguageService
     }
 
     private static void TranslateElement(DependencyObject element)
-    {        if (element is FrameworkElement frameworkElement)
-        {
-            var automationName = AutomationProperties.GetName(frameworkElement);
-            if (!string.IsNullOrWhiteSpace(automationName))
-            {
-                AutomationProperties.SetName(frameworkElement, Translate(automationName));
-            }
-
-            if (ToolTipService.GetToolTip(frameworkElement) is string toolTip)
-            {
-                ToolTipService.SetToolTip(frameworkElement, Translate(toolTip));
-            }
-        }
-
+    {
         switch (element)
         {
             case TextBlock textBlock:
@@ -726,7 +720,7 @@ public static class LauncherLanguageService
                     comboBox.Header = Translate(comboHeader);
                 }
 
-                TranslateComboBoxItems(comboBox);
+                TranslateSelectedComboBoxItem(comboBox);
                 if (!HookedComboBoxes.TryGetValue(comboBox, out _))
                 {
                     HookedComboBoxes.Add(comboBox, new object());

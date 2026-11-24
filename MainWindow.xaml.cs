@@ -37,8 +37,6 @@ public sealed partial class MainWindow : Window
 
     private bool _isSyncingSelection;
 
-    private long _lastLanguageApplyTick;
-
     public MainWindow()
     {
         InitializeComponent();
@@ -222,6 +220,15 @@ public sealed partial class MainWindow : Window
         }
     }
 
+    private static async Task ApplyPageLanguageAsync(FrameworkElement page)
+    {
+        LauncherLanguageService.Apply(page);
+        await Task.Delay(250);
+        LauncherLanguageService.Apply(page);
+        await Task.Delay(900);
+        LauncherLanguageService.Apply(page);
+    }
+
     private void NavFrame_Navigated(object sender, NavigationEventArgs e)
     {
         AppTitleBar.IsBackButtonVisible = NavFrame.CanGoBack;
@@ -230,24 +237,8 @@ public sealed partial class MainWindow : Window
             LauncherLanguageService.Apply(NavFrame.Content as FrameworkElement);
             if (NavFrame.Content is FrameworkElement page)
             {
-                page.Loaded += (_, _) =>
-                    LauncherLanguageService.Apply(NavFrame.Content as FrameworkElement);
-                page.LayoutUpdated += (_, _) =>
-                {
-                    if (!LauncherLanguageService.IsEnglish)
-                    {
-                        return;
-                    }
-
-                    var now = Environment.TickCount64;
-                    if (now - _lastLanguageApplyTick < 400)
-                    {
-                        return;
-                    }
-
-                    _lastLanguageApplyTick = now;
-                    LauncherLanguageService.Apply(NavFrame.Content as FrameworkElement);
-                };
+                page.Loaded += (_, _) => LauncherLanguageService.Apply(page);
+                _ = ApplyPageLanguageAsync(page);
             }
         }
         catch

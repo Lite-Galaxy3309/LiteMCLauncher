@@ -118,12 +118,14 @@
                         <Button
                             AutomationProperties.Name="上一首"
                             Click="Previous_Click"
+                            IsEnabled="{x:Bind Online.HasCurrentSong, Mode=OneWay}"
                             Padding="14">
                             <FontIcon FontSize="20" Glyph="&#xE892;" />
                         </Button>
                         <Button
                             AutomationProperties.Name="播放或暂停"
                             Click="PlayPause_Click"
+                            IsEnabled="{x:Bind Online.HasCurrentSong, Mode=OneWay}"
                             Padding="20"
                             Style="{StaticResource AccentButtonStyle}">
                             <FontIcon FontSize="26" Glyph="{x:Bind Online.PlayPauseGlyph, Mode=OneWay}" />
@@ -131,6 +133,7 @@
                         <Button
                             AutomationProperties.Name="下一首"
                             Click="Next_Click"
+                            IsEnabled="{x:Bind Online.HasCurrentSong, Mode=OneWay}"
                             Padding="14">
                             <FontIcon FontSize="20" Glyph="&#xE893;" />
                         </Button>

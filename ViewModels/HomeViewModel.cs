@@ -9,7 +9,7 @@ namespace LiteMCLauncher.ViewModels;
 /// <summary>
 /// Account and selected-instance state for the Home page.
 /// </summary>
-public sealed class HomeViewModel : ObservableObject
+public sealed class HomeViewModel : ObservableObject, IDisposable
 {
     private readonly MicrosoftAuthService _authService;
     private readonly MinecraftInstanceService _instanceService;
@@ -41,8 +41,45 @@ public sealed class HomeViewModel : ObservableObject
         _settingsService = settingsService;
         _avatarService = avatarService;
 
-        Music.PropertyChanged += (_, _) => RaiseOverlayProperties();
-        AppServices.OnlineMusic.PropertyChanged += (_, _) => RaiseOverlayProperties();
+        Music.PropertyChanged += OnMusicPropertyChanged;
+        AppServices.OnlineMusic.PropertyChanged += OnOnlineMusicPropertyChanged;
+        _isAttached = true;
+    }
+
+    private bool _isAttached;
+
+    public void Attach()
+    {
+        if (_isAttached)
+        {
+            return;
+        }
+
+        Music.PropertyChanged += OnMusicPropertyChanged;
+        AppServices.OnlineMusic.PropertyChanged += OnOnlineMusicPropertyChanged;
+        _isAttached = true;
+    }
+
+    private void OnMusicPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        RaiseOverlayProperties();
+    }
+
+    private void OnOnlineMusicPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        RaiseOverlayProperties();
+    }
+
+    public void Dispose()
+    {
+        if (!_isAttached)
+        {
+            return;
+        }
+
+        Music.PropertyChanged -= OnMusicPropertyChanged;
+        AppServices.OnlineMusic.PropertyChanged -= OnOnlineMusicPropertyChanged;
+        _isAttached = false;
     }
 
     public ObservableCollection<MinecraftInstance> Instances { get; } = [];

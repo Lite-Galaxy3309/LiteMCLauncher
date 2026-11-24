@@ -44,6 +44,7 @@ public sealed partial class HomePage : Page
 
     private async void HomePage_Loaded(object sender, RoutedEventArgs e)
     {
+        ViewModel.Attach();
         await ViewModel.LoadAsync();
         await AppServices.Music.InitializeAsync();
     }
@@ -52,6 +53,7 @@ public sealed partial class HomePage : Page
     {
         _loginCancellation?.Cancel();
         _launchCancellation?.Cancel();
+        ViewModel.Dispose();
     }
 
     private void ManageInstance_Click(object sender, RoutedEventArgs e)

@@ -32,6 +32,7 @@ public sealed class OnlineMusicService : ObservableObject
     };
 
     private readonly MediaPlayer _player;
+    private MediaSource? _mediaSource;
     private readonly DispatcherQueue? _dispatcherQueue;
     private Task? _initializeTask;
     private OnlineSong? _currentSong;
@@ -351,7 +352,10 @@ public sealed class OnlineMusicService : ObservableObject
         _queueIndex = index;
         AppServices.Music.Pause();
         CurrentSong = playable;
-        _player.Source = MediaSource.CreateFromUri(new Uri(playable.PlayUrl));
+        _player.Pause();
+        _mediaSource?.Dispose();
+        _mediaSource = MediaSource.CreateFromUri(new Uri(playable.PlayUrl));
+        _player.Source = _mediaSource;
         _player.Play();
         SetPlaying(true);
         StatusText = $"正在播放：{playable.Name}";
@@ -426,7 +430,9 @@ public sealed class OnlineMusicService : ObservableObject
 
         if (_player.Source is null && !string.IsNullOrWhiteSpace(CurrentSong.PlayUrl))
         {
-            _player.Source = MediaSource.CreateFromUri(new Uri(CurrentSong.PlayUrl));
+            _mediaSource?.Dispose();
+            _mediaSource = MediaSource.CreateFromUri(new Uri(CurrentSong.PlayUrl));
+            _player.Source = _mediaSource;
         }
 
         if (_player.Source is null)
