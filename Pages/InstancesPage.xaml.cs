@@ -221,6 +221,43 @@ public sealed partial class InstancesPage : Page
         }
     }
 
+    private async void DeleteInstance_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { DataContext: MinecraftInstance instance } || XamlRoot is null)
+        {
+            return;
+        }
+
+        var dialog = new ContentDialog
+        {
+            Title = "删除实例",
+            Content = new TextBlock
+            {
+                Text = $"将删除实例“{instance.DisplayName}”的版本文件和实例游戏目录（包括世界、资源包、光影、Mods 和日志）。\n\n此操作不可恢复。",
+                TextWrapping = TextWrapping.Wrap,
+            },
+            PrimaryButtonText = "删除",
+            CloseButtonText = "取消",
+            DefaultButton = ContentDialogButton.Close,
+            XamlRoot = XamlRoot,
+        };
+
+        if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+        {
+            return;
+        }
+
+        try
+        {
+            await InstanceDeletionService.DeleteAsync(instance, AppServices.LauncherState);
+            await ViewModel.LoadAsync();
+        }
+        catch (Exception exception)
+        {
+            await ShowMessageAsync("删除失败", exception.Message);
+        }
+    }
+
     private void OpenInstanceFolder_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not Button { Tag: string directory } || !Directory.Exists(directory))

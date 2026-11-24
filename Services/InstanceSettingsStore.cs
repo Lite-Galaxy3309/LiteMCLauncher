@@ -65,6 +65,23 @@ public static class InstanceSettingsStore
         }
     }
 
+    public static void Delete(string instanceId)
+    {
+        if (string.IsNullOrWhiteSpace(instanceId))
+        {
+            return;
+        }
+
+        lock (Gate)
+        {
+            var settings = Load();
+            if (settings.Remove(instanceId))
+            {
+                Save(settings);
+            }
+        }
+    }
+
     private static Dictionary<string, InstanceGameSettings> Load()
     {
         if (_settings is not null)

@@ -203,6 +203,9 @@
                                         <Button
                                             Click="ManageInstance_Click"
                                             Content="管理" />
+                                        <Button
+                                            Click="DeleteInstance_Click"
+                                            Content="删除" />
                                     </StackPanel>
                                 </Grid>
                             </Border>

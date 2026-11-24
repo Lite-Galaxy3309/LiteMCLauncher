@@ -30,8 +30,24 @@ public static class InstanceNameStore
         }
     }
 
-    public static string? SetName(string instanceId, string? name)
+    public static void Remove(string instanceId)
     {
+        if (string.IsNullOrWhiteSpace(instanceId))
+        {
+            return;
+        }
+
+        lock (Gate)
+        {
+            var names = Load();
+            if (names.Remove(instanceId))
+            {
+                Save(names);
+            }
+        }
+    }
+
+    public static string? SetName(string instanceId, string? name)    {
         if (string.IsNullOrWhiteSpace(instanceId))
         {
             return null;

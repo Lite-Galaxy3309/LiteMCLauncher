@@ -30,8 +30,24 @@ public static class InstanceJavaStore
         }
     }
 
-    public static string? SetPath(string instanceId, string? path)
+    public static void Remove(string instanceId)
     {
+        if (string.IsNullOrWhiteSpace(instanceId))
+        {
+            return;
+        }
+
+        lock (Gate)
+        {
+            var paths = Load();
+            if (paths.Remove(instanceId))
+            {
+                Save(paths);
+            }
+        }
+    }
+
+    public static string? SetPath(string instanceId, string? path)    {
         if (string.IsNullOrWhiteSpace(instanceId))
         {
             return null;
