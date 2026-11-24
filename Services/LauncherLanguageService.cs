@@ -21,6 +21,8 @@ public static class LauncherLanguageService
         ["实例管理"] = "Instances",
         ["版本下载"] = "Downloads",
         ["音乐"] = "Music",
+        ["本地音乐"] = "Local music",
+        ["在线音乐"] = "Online music",
         ["新闻"] = "News",
         ["设置"] = "Settings",
         ["关于"] = "About",

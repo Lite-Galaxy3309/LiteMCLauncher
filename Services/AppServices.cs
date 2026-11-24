@@ -19,6 +19,8 @@ public static class AppServices
 
     public static MusicService Music { get; } = new();
 
+    public static OnlineMusicService OnlineMusic { get; } = new();
+
     public static NewsService News { get; } = new();
 
     public static ModLoaderAvailabilityService LoaderAvailability { get; } = new();

@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using LiteMCLauncher.Models;
 using LiteMCLauncher.Services;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace LiteMCLauncher.ViewModels;
 
@@ -39,6 +40,9 @@ public sealed class HomeViewModel : ObservableObject
         _javaService = javaService;
         _settingsService = settingsService;
         _avatarService = avatarService;
+
+        Music.PropertyChanged += (_, _) => RaiseOverlayProperties();
+        AppServices.OnlineMusic.PropertyChanged += (_, _) => RaiseOverlayProperties();
     }
 
     public ObservableCollection<MinecraftInstance> Instances { get; } = [];
@@ -46,6 +50,87 @@ public sealed class HomeViewModel : ObservableObject
     public ObservableCollection<AccountModel> Accounts { get; } = [];
 
     public MusicService Music => AppServices.Music;
+
+    public OnlineMusicService OnlineMusic => AppServices.OnlineMusic;
+
+    public bool IsOnlineOverlay =>
+        OnlineMusic.HasCurrentSong && (!Music.IsOverlayVisible || OnlineMusic.IsPlaying);
+
+    public bool OverlayVisible => IsOnlineOverlay || Music.IsOverlayVisible;
+
+    public string OverlayTitle => IsOnlineOverlay ? OnlineMusic.CurrentTitle : Music.CurrentTitle;
+
+    public string OverlayArtist => IsOnlineOverlay ? OnlineMusic.CurrentArtist : Music.CurrentArtist;
+
+    public ImageSource? OverlayArt
+    {
+        get
+        {
+            if (IsOnlineOverlay &&
+                Uri.TryCreate(OnlineMusic.CurrentCoverUrl, UriKind.Absolute, out var uri))
+            {
+                return new BitmapImage(uri);
+            }
+
+            return Music.CurrentAlbumArt;
+        }
+    }
+
+    public string OverlayPlayPauseGlyph => IsOnlineOverlay
+        ? OnlineMusic.PlayPauseGlyph
+        : Music.PlayPauseGlyph;
+
+    public string OverlayRepeatDisplay => Music.RepeatModeDisplay;
+
+    public bool OverlayQueueEnabled => !IsOnlineOverlay;
+
+    public void RaiseOverlayProperties()
+    {
+        OnPropertyChanged(nameof(IsOnlineOverlay));
+        OnPropertyChanged(nameof(OverlayVisible));
+        OnPropertyChanged(nameof(OverlayTitle));
+        OnPropertyChanged(nameof(OverlayArtist));
+        OnPropertyChanged(nameof(OverlayArt));
+        OnPropertyChanged(nameof(OverlayPlayPauseGlyph));
+        OnPropertyChanged(nameof(OverlayRepeatDisplay));
+        OnPropertyChanged(nameof(OverlayQueueEnabled));
+    }
+
+    public async Task ToggleOverlayPlayPauseAsync()
+    {
+        if (IsOnlineOverlay)
+        {
+            OnlineMusic.TogglePlayPause();
+        }
+        else
+        {
+            await Music.TogglePlayPauseAsync();
+        }
+    }
+
+    public async Task NextOverlayAsync()
+    {
+        if (!IsOnlineOverlay)
+        {
+            await Music.NextAsync();
+        }
+    }
+
+    public async Task PreviousOverlayAsync()
+    {
+        if (!IsOnlineOverlay)
+        {
+            await Music.PreviousAsync();
+        }
+    }
+
+    public void CycleOverlayRepeat()
+    {
+        if (!IsOnlineOverlay)
+        {
+            Music.CycleRepeatMode();
+        }
+    }
 
     private AccountModel? Account => _authService.CurrentAccount;
 

@@ -180,22 +180,22 @@ public sealed partial class HomePage : Page
 
     private async void MusicPlayPause_Click(object sender, RoutedEventArgs e)
     {
-        await AppServices.Music.TogglePlayPauseAsync();
+        await ViewModel.ToggleOverlayPlayPauseAsync();
     }
 
     private async void MusicNext_Click(object sender, RoutedEventArgs e)
     {
-        await AppServices.Music.NextAsync();
+        await ViewModel.NextOverlayAsync();
     }
 
     private async void MusicPrevious_Click(object sender, RoutedEventArgs e)
     {
-        await AppServices.Music.PreviousAsync();
+        await ViewModel.PreviousOverlayAsync();
     }
 
     private void MusicRepeatMode_Click(object sender, RoutedEventArgs e)
     {
-        AppServices.Music.CycleRepeatMode();
+        ViewModel.CycleOverlayRepeat();
     }
 
     private async void RemoveAccount_Click(object sender, RoutedEventArgs e)

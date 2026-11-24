@@ -274,6 +274,7 @@ public sealed class MusicService : ObservableObject
         }
 
         EnsurePlayer();
+        AppServices.OnlineMusic.Pause();
 
         try
         {
@@ -323,11 +324,23 @@ public sealed class MusicService : ObservableObject
         }
         else
         {
+            AppServices.OnlineMusic.Pause();
             _player.Play();
             IsPlaying = true;
         }
 
         await Task.CompletedTask;
+    }
+
+    public void Pause()
+    {
+        if (!IsPlaying)
+        {
+            return;
+        }
+
+        _player?.Pause();
+        IsPlaying = false;
     }
 
     public async Task NextAsync()

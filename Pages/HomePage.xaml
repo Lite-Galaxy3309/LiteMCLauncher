@@ -328,7 +328,7 @@
             VerticalAlignment="Top"
             Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
             Style="{StaticResource CardBorderStyle}"
-            Visibility="{x:Bind ViewModel.Music.IsOverlayVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+            Visibility="{x:Bind ViewModel.OverlayVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid ColumnSpacing="10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -346,7 +346,7 @@
                             Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
                             Glyph="&#xE8D6;" />
                         <Image
-                            Source="{x:Bind ViewModel.Music.CurrentAlbumArt, Mode=OneWay}"
+                            Source="{x:Bind ViewModel.OverlayArt, Mode=OneWay}"
                             Stretch="UniformToFill" />
                     </Grid>
                 </Border>
@@ -357,13 +357,13 @@
                     <TextBlock
                         MaxLines="1"
                         Style="{StaticResource BodyStrongTextBlockStyle}"
-                        Text="{x:Bind ViewModel.Music.CurrentTitle, Mode=OneWay}"
+                        Text="{x:Bind ViewModel.OverlayTitle, Mode=OneWay}"
                         TextTrimming="CharacterEllipsis" />
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         MaxLines="1"
                         Style="{StaticResource CaptionTextBlockStyle}"
-                        Text="{x:Bind ViewModel.Music.CurrentArtist, Mode=OneWay}"
+                        Text="{x:Bind ViewModel.OverlayArtist, Mode=OneWay}"
                         TextTrimming="CharacterEllipsis" />
                 </StackPanel>
                 <StackPanel
@@ -374,6 +374,7 @@
                     <Button
                         AutomationProperties.Name="上一首"
                         Click="MusicPrevious_Click"
+                        IsEnabled="{x:Bind ViewModel.OverlayQueueEnabled, Mode=OneWay}"
                         Padding="7">
                         <FontIcon FontSize="15" Glyph="&#xE892;" />
                     </Button>
@@ -381,21 +382,23 @@
                         AutomationProperties.Name="播放或暂停"
                         Click="MusicPlayPause_Click"
                         Padding="7">
-                        <FontIcon FontSize="16" Glyph="{x:Bind ViewModel.Music.PlayPauseGlyph, Mode=OneWay}" />
+                        <FontIcon FontSize="16" Glyph="{x:Bind ViewModel.OverlayPlayPauseGlyph, Mode=OneWay}" />
                     </Button>
                     <Button
                         AutomationProperties.Name="下一首"
                         Click="MusicNext_Click"
+                        IsEnabled="{x:Bind ViewModel.OverlayQueueEnabled, Mode=OneWay}"
                         Padding="7">
                         <FontIcon FontSize="15" Glyph="&#xE893;" />
                     </Button>
                     <Button
                         AutomationProperties.Name="切换播放模式"
                         Click="MusicRepeatMode_Click"
+                        IsEnabled="{x:Bind ViewModel.OverlayQueueEnabled, Mode=OneWay}"
                         Padding="7">
                         <TextBlock
                             FontSize="11"
-                            Text="{x:Bind ViewModel.Music.RepeatModeDisplay, Mode=OneWay}" />
+                            Text="{x:Bind ViewModel.OverlayRepeatDisplay, Mode=OneWay}" />
                     </Button>
                 </StackPanel>
             </Grid>

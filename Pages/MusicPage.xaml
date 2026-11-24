@@ -23,7 +23,7 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <StackPanel Spacing="4">
-                <TextBlock Style="{StaticResource PageTitleTextBlockStyle}" Text="音乐" />
+                <TextBlock Style="{StaticResource PageTitleTextBlockStyle}" Text="本地音乐" />
                 <TextBlock
                     Style="{StaticResource PageSubtitleTextBlockStyle}"
                     Text="导入本地歌曲，播放列表与自动播放设置。" />

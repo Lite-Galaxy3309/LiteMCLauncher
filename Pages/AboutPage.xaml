@@ -41,7 +41,7 @@
                         <StackPanel Orientation="Horizontal" Spacing="12">
                             <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="LiteMCLauncher" />
                             <Border Style="{StaticResource PillBorderStyle}">
-                                <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="v0.3.0" />
+                                <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="v0.4.0" />
                             </Border>
                         </StackPanel>
                         <TextBlock
@@ -65,7 +65,7 @@
                         <TextBlock
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             Text="当前版本" />
-                        <TextBlock Grid.Column="1" Text="0.3.0" />
+                        <TextBlock Grid.Column="1" Text="0.4.0" />
                     </Grid>
 
                     <Grid ColumnSpacing="16">
@@ -342,6 +342,28 @@
                                 Padding="0"
                                 Content="https://docs.modrinth.com"
                                 NavigateUri="https://docs.modrinth.com" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="42" Height="42" Style="{StaticResource IconTileBorderStyle}">
+                            <FontIcon FontSize="20" Glyph="&#xE8D6;" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Netease_url（网易云音乐解析参考）" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="在线音乐搜索、播放地址和 MUSIC_U Cookie 请求头的实现参考；MIT 许可证。"
+                                TextWrapping="Wrap" />
+                            <HyperlinkButton
+                                Padding="0"
+                                Content="GitHub · Suxiaoqinx/Netease_url"
+                                NavigateUri="https://github.com/Suxiaoqinx/Netease_url" />
                         </StackPanel>
                     </Grid>
 

@@ -59,6 +59,7 @@ public partial class App : Application
             // same initialization task before showing the account list.
             _ = AppServices.Auth.InitializeAsync();
             _ = AppServices.Music.InitializeAsync();
+            _ = AppServices.OnlineMusic.InitializeAsync();
         }
         catch (Exception exception)
         {

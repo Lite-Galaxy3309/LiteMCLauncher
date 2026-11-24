@@ -29,6 +29,7 @@ public sealed partial class MainWindow : Window
         ["downloads"] = typeof(DownloadsPage),
         ["mods"] = typeof(ModsPage),
         ["music"] = typeof(MusicPage),
+        ["online-music"] = typeof(OnlineMusicPage),
         ["news"] = typeof(NewsPage),
         ["settings"] = typeof(SettingsPage),
         ["about"] = typeof(AboutPage),
