@@ -9,27 +9,65 @@
     xmlns:models="using:LiteMCLauncher.Models"
     mc:Ignorable="d">
 
+    <Page.Resources>
+        <DataTemplate x:Key="HistoryDialogItemTemplate" x:DataType="models:OnlineHistoryItem">
+            <Grid Margin="0,4" ColumnSpacing="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Spacing="1">
+                    <TextBlock
+                        MaxLines="1"
+                        Style="{StaticResource BodyStrongTextBlockStyle}"
+                        Text="{x:Bind Name}"
+                        TextTrimming="CharacterEllipsis" />
+                    <TextBlock
+                        MaxLines="1"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="{x:Bind Subtitle}"
+                        TextTrimming="CharacterEllipsis" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="{x:Bind PlayedAtDisplay}" />
+                </StackPanel>
+                <Button
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Click="DeleteHistoryItem_Click"
+                    Content="删除" />
+            </Grid>
+        </DataTemplate>
+    </Page.Resources>
+
     <Grid Padding="32,24,32,24" RowSpacing="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid>
+        <Grid ColumnSpacing="12">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <StackPanel Spacing="4">
                 <TextBlock Style="{StaticResource PageTitleTextBlockStyle}" Text="在线音乐" />
                 <TextBlock
                     Style="{StaticResource PageSubtitleTextBlockStyle}"
-                    Text="搜索并播放网易云音乐；登录 Cookie 可访问账号相关音质和内容。" />
+                    Text="播放器与历史记录；搜索和登录已移到单独的搜索页面。" />
             </StackPanel>
-            <ProgressRing
+            <Button
                 Grid.Column="1"
+                VerticalAlignment="Center"
+                Click="OpenSearch_Click"
+                Content="搜索"
+                Style="{StaticResource AccentButtonStyle}" />
+            <ProgressRing
+                Grid.Column="2"
                 Width="28"
                 Height="28"
                 VerticalAlignment="Center"
@@ -38,258 +76,80 @@
 
         <Border
             Grid.Row="1"
-            Padding="16"
+            Padding="24"
             Style="{StaticResource CardBorderStyle}">
-            <StackPanel Spacing="10">
-                <Grid ColumnSpacing="10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBox
-                        x:Name="SearchBox"
-                        PlaceholderText="搜索歌曲、歌手或专辑"
-                        KeyDown="SearchBox_KeyDown" />
-                    <Button
-                        Grid.Column="1"
-                        Click="SearchButton_Click"
-                        Content="搜索"
-                        Style="{StaticResource AccentButtonStyle}" />
-                </Grid>
-                <Grid ColumnSpacing="10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <PasswordBox
-                        x:Name="CookieBox"
-                        Header="网易云 Cookie / MUSIC_U"
-                        PlaceholderText="从 music.163.com 的 Network 请求头复制 Cookie；可留空"
-                        PasswordRevealMode="Peek" />
-                    <Button
-                        Grid.Column="1"
-                        VerticalAlignment="Bottom"
-                        Click="SaveCookie_Click"
-                        Content="保存登录" />
-                </Grid>
-                <TextBlock
-                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                    Style="{StaticResource CaptionTextBlockStyle}"
-                    Text="Cookie 只保存在本机启动器数据目录，用于网易云请求头；不会上传到 GitHub 或第三方。"
-                    TextWrapping="Wrap" />
-                <TextBlock
-                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                    Style="{StaticResource CaptionTextBlockStyle}"
-                    Text="{x:Bind Online.StatusText, Mode=OneWay}"
-                    TextWrapping="Wrap" />
-            </StackPanel>
-        </Border>
-
-        <Grid Grid.Row="2" ColumnSpacing="16">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="320" />
-            </Grid.ColumnDefinitions>
-
-            <Grid>
-                <ListView
-                    x:Name="ResultsList"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    IsItemClickEnabled="True"
-                    ItemClick="ResultsList_ItemClick"
-                    ItemsSource="{x:Bind Online.Results}"
-                    SelectionMode="None">
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                            <Setter Property="MinHeight" Value="0" />
-                            <Setter Property="Padding" Value="0" />
-                            <Setter Property="Margin" Value="0,0,0,8" />
-                            <Setter Property="Background" Value="Transparent" />
-                        </Style>
-                    </ListView.ItemContainerStyle>
-                    <ListView.ItemTemplate>
-                        <DataTemplate x:DataType="models:OnlineSong">
-                            <Border Padding="12" Style="{StaticResource CardBorderStyle}">
-                                <Grid ColumnSpacing="12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <Border
-                                        Width="46"
-                                        Height="46"
-                                        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
-                                        CornerRadius="8">
-                                        <Image
-                                            Source="{x:Bind CoverUrl, Converter={StaticResource StringToImageSourceConverter}}"
-                                            Stretch="UniformToFill" />
-                                    </Border>
-                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                                        <TextBlock
-                                            MaxLines="1"
-                                            Style="{StaticResource BodyStrongTextBlockStyle}"
-                                            Text="{x:Bind Name}"
-                                            TextTrimming="CharacterEllipsis" />
-                                        <TextBlock
-                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                            MaxLines="1"
-                                            Style="{StaticResource CaptionTextBlockStyle}"
-                                            Text="{x:Bind Subtitle}"
-                                            TextTrimming="CharacterEllipsis" />
-                                    </StackPanel>
-                                    <TextBlock
-                                        Grid.Column="2"
-                                        VerticalAlignment="Center"
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                        Text="{x:Bind DurationDisplay}" />
-                                    <Button
-                                        Grid.Column="3"
-                                        VerticalAlignment="Center"
-                                        Click="PlaySong_Click"
-                                        Content="播放" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-                <TextBlock
-                    x:Name="EmptyResultsText"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                    Style="{StaticResource CaptionTextBlockStyle}"
-                    Text="输入关键词开始搜索"
-                    TextWrapping="Wrap" />
-            </Grid>
-
-            <Border
-                Grid.Column="1"
-                Padding="14"
-                Style="{StaticResource CardBorderStyle}">
-                <Grid RowSpacing="10">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <TextBlock Style="{StaticResource CardTitleTextBlockStyle}" Text="最近播放" />
-                    <ListView
-                        Grid.Row="1"
-                        MaxHeight="220"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        IsItemClickEnabled="True"
-                        ItemClick="HistoryList_ItemClick"
-                        ItemsSource="{x:Bind Online.History}"
-                        SelectionMode="None">
-                        <ListView.ItemContainerStyle>
-                            <Style TargetType="ListViewItem">
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                <Setter Property="MinHeight" Value="0" />
-                                <Setter Property="Padding" Value="6,4" />
-                                <Setter Property="Margin" Value="0" />
-                                <Setter Property="Background" Value="Transparent" />
-                            </Style>
-                        </ListView.ItemContainerStyle>
-                        <ListView.ItemTemplate>
-                            <DataTemplate x:DataType="models:OnlineHistoryItem">
-                                <StackPanel Spacing="1">
-                                    <TextBlock
-                                        MaxLines="1"
-                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                        Text="{x:Bind Name}"
-                                        TextTrimming="CharacterEllipsis" />
-                                    <TextBlock
-                                        MaxLines="1"
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                        Text="{x:Bind Subtitle}"
-                                        TextTrimming="CharacterEllipsis" />
-                                    <TextBlock
-                                        Foreground="{ThemeResource TextFillColorTertiaryBrush}"
-                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                        Text="{x:Bind PlayedAtDisplay}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                    <TextBlock
-                        Grid.Row="2"
-                        Margin="0,8,0,0"
-                        Style="{StaticResource CardTitleTextBlockStyle}"
-                        Text="搜索历史" />
-                    <ListView
-                        Grid.Row="3"
-                        MaxHeight="160"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        IsItemClickEnabled="True"
-                        ItemClick="SearchHistoryList_ItemClick"
-                        ItemsSource="{x:Bind Online.SearchHistory}"
-                        SelectionMode="None">
-                        <ListView.ItemContainerStyle>
-                            <Style TargetType="ListViewItem">
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                <Setter Property="MinHeight" Value="0" />
-                                <Setter Property="Padding" Value="6,2" />
-                                <Setter Property="Margin" Value="0" />
-                                <Setter Property="Background" Value="Transparent" />
-                            </Style>
-                        </ListView.ItemContainerStyle>
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock
-                                    Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                    Text="{Binding}" />
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                </Grid>
-            </Border>
-        </Grid>
-
-        <Border
-            Grid.Row="3"
-            Padding="14"
-            Style="{StaticResource CardBorderStyle}"
-            Visibility="{x:Bind Online.HasCurrentSong, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <Grid ColumnSpacing="12">
+            <Grid ColumnSpacing="28">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="280" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
+
                 <Border
-                    Width="48"
-                    Height="48"
+                    Width="280"
+                    Height="280"
+                    VerticalAlignment="Top"
                     Background="{ThemeResource SubtleFillColorSecondaryBrush}"
-                    CornerRadius="8">
+                    CornerRadius="14">
                     <Image
                         Source="{x:Bind Online.CurrentCoverUrl, Mode=OneWay, Converter={StaticResource StringToImageSourceConverter}}"
                         Stretch="UniformToFill" />
                 </Border>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind Online.CurrentTitle, Mode=OneWay}" />
+
+                <StackPanel Grid.Column="1" Spacing="12">
+                    <TextBlock
+                        Style="{StaticResource PageTitleTextBlockStyle}"
+                        Text="{x:Bind Online.CurrentTitle, Mode=OneWay}"
+                        TextTrimming="CharacterEllipsis" />
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource BodyStrongTextBlockStyle}"
+                        Text="{x:Bind Online.CurrentArtist, Mode=OneWay}"
+                        TextTrimming="CharacterEllipsis" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorTertiaryBrush}"
                         Style="{StaticResource CaptionTextBlockStyle}"
-                        Text="{x:Bind Online.CurrentArtist, Mode=OneWay}" />
+                        Text="{x:Bind Online.CurrentAlbum, Mode=OneWay}"
+                        TextTrimming="CharacterEllipsis" />
+
+                    <StackPanel
+                        Margin="0,12,0,0"
+                        Orientation="Horizontal"
+                        Spacing="12">
+                        <Button
+                            AutomationProperties.Name="上一首"
+                            Click="Previous_Click"
+                            Padding="14">
+                            <FontIcon FontSize="20" Glyph="&#xE892;" />
+                        </Button>
+                        <Button
+                            AutomationProperties.Name="播放或暂停"
+                            Click="PlayPause_Click"
+                            Padding="20"
+                            Style="{StaticResource AccentButtonStyle}">
+                            <FontIcon FontSize="26" Glyph="{x:Bind Online.PlayPauseGlyph, Mode=OneWay}" />
+                        </Button>
+                        <Button
+                            AutomationProperties.Name="下一首"
+                            Click="Next_Click"
+                            Padding="14">
+                            <FontIcon FontSize="20" Glyph="&#xE893;" />
+                        </Button>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Click="PlaybackMode_Click">
+                            <TextBlock Text="{x:Bind Online.PlaybackModeDisplay, Mode=OneWay}" />
+                        </Button>
+                        <Button Click="OpenHistory_Click" Content="历史播放" />
+                    </StackPanel>
+
+                    <TextBlock
+                        Margin="0,8,0,0"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="{x:Bind Online.StatusText, Mode=OneWay}"
+                        TextWrapping="Wrap" />
                 </StackPanel>
-                <Button
-                    Grid.Column="2"
-                    VerticalAlignment="Center"
-                    Click="PlayPause_Click"
-                    AutomationProperties.Name="播放或暂停">
-                    <FontIcon Glyph="{x:Bind Online.PlayPauseGlyph, Mode=OneWay}" />
-                </Button>
             </Grid>
         </Border>
     </Grid>

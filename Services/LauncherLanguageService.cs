@@ -324,6 +324,17 @@ public static class LauncherLanguageService
         ["启动失败"] = "Launch failed",
 
         ["尚未找到日志文件。启动一次游戏后即可查看。"] = "No log files found yet. Launch the game once to view logs.",
+
+        ["播放器"] = "Player",
+        ["历史播放"] = "Play history",
+        ["清空历史"] = "Clear history",
+        ["未在播放"] = "Nothing playing",
+
+        ["在线音乐搜索"] = "Online music search",
+        ["播放器与历史记录；搜索和登录已移到单独的搜索页面。"] = "Player and history; search and login are now on a separate page.",
+        ["搜索历史："] = "Search history:",
+
+        ["搜索并播放网易云音乐"] = "Search and play NetEase Cloud Music",
     };
 
     private static readonly Dictionary<string, string> EnglishToChinese = BuildReverseMap();

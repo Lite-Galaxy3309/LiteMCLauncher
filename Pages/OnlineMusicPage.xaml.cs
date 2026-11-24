@@ -2,7 +2,6 @@ using LiteMCLauncher.Models;
 using LiteMCLauncher.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Input;
 
 namespace LiteMCLauncher.Pages;
 
@@ -19,76 +18,105 @@ public sealed partial class OnlineMusicPage : Page
     private async void OnlineMusicPage_Loaded(object sender, RoutedEventArgs e)
     {
         await Online.InitializeAsync();
-        CookieBox.Password = Online.Cookie;
     }
 
-    private async void SearchButton_Click(object sender, RoutedEventArgs e)
+    private void OpenSearch_Click(object sender, RoutedEventArgs e)
     {
-        await SearchAsync();
-    }
-
-    private async void SearchBox_KeyDown(object sender, KeyRoutedEventArgs e)
-    {
-        if (e.Key == Windows.System.VirtualKey.Enter)
-        {
-            await SearchAsync();
-        }
-    }
-
-    private async Task SearchAsync()
-    {
-        var keyword = SearchBox.Text.Trim();
-        if (string.IsNullOrWhiteSpace(keyword))
-        {
-            return;
-        }
-
-        await Online.SearchAsync(keyword);
-        EmptyResultsText.Visibility = Online.Results.Count == 0
-            ? Visibility.Visible
-            : Visibility.Collapsed;
-    }
-
-    private async void PlaySong_Click(object sender, RoutedEventArgs e)
-    {
-        if (sender is Button { DataContext: OnlineSong song })
-        {
-            await Online.PlayAsync(song);
-        }
-    }
-
-    private async void ResultsList_ItemClick(object sender, ItemClickEventArgs e)
-    {
-        if (e.ClickedItem is OnlineSong song)
-        {
-            await Online.PlayAsync(song);
-        }
-    }
-
-    private async void HistoryList_ItemClick(object sender, ItemClickEventArgs e)
-    {
-        if (e.ClickedItem is OnlineHistoryItem item)
-        {
-            await Online.PlayHistoryAsync(item);
-        }
-    }
-
-    private async void SearchHistoryList_ItemClick(object sender, ItemClickEventArgs e)
-    {
-        if (e.ClickedItem is string keyword)
-        {
-            SearchBox.Text = keyword;
-            await Online.SearchAsync(keyword);
-        }
-    }
-
-    private async void SaveCookie_Click(object sender, RoutedEventArgs e)
-    {
-        await Online.SaveCookieAsync(CookieBox.Password);
+        Frame.Navigate(typeof(OnlineMusicSearchPage));
     }
 
     private void PlayPause_Click(object sender, RoutedEventArgs e)
     {
         Online.TogglePlayPause();
+    }
+
+    private async void Previous_Click(object sender, RoutedEventArgs e)
+    {
+        await Online.PreviousAsync();
+    }
+
+    private async void Next_Click(object sender, RoutedEventArgs e)
+    {
+        await Online.NextAsync();
+    }
+
+    private void PlaybackMode_Click(object sender, RoutedEventArgs e)
+    {
+        Online.CyclePlaybackMode();
+    }
+
+    private async void OpenHistory_Click(object sender, RoutedEventArgs e)
+    {
+        if (XamlRoot is null)
+        {
+            return;
+        }
+
+        var historyList = new ListView
+        {
+            MaxHeight = 360,
+            ItemsSource = Online.History,
+            ItemTemplate = (DataTemplate)Resources["HistoryDialogItemTemplate"],
+            IsItemClickEnabled = true,
+            SelectionMode = ListViewSelectionMode.None,
+        };
+        historyList.ItemClick += async (_, args) =>
+        {
+            if (args.ClickedItem is OnlineHistoryItem item)
+            {
+                await Online.PlayHistoryAsync(item);
+            }
+        };
+
+        var modeBox = new ComboBox
+        {
+            Header = "播放模式",
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+        };
+        modeBox.Items.Add(new ComboBoxItem { Content = "列表循环", Tag = "RepeatAll" });
+        modeBox.Items.Add(new ComboBoxItem { Content = "单曲循环", Tag = "RepeatOne" });
+        modeBox.Items.Add(new ComboBoxItem { Content = "随机播放", Tag = "Shuffle" });
+        modeBox.SelectedIndex = Online.PlaybackMode switch
+        {
+            "RepeatOne" => 1,
+            "Shuffle" => 2,
+            _ => 0,
+        };
+        modeBox.SelectionChanged += (_, _) =>
+        {
+            if (modeBox.SelectedItem is ComboBoxItem { Tag: string mode })
+            {
+                Online.SetPlaybackMode(mode);
+            }
+        };
+
+        var clearButton = new Button { Content = "清空历史" };
+        clearButton.Click += async (_, _) => await Online.ClearHistoryAsync();
+
+        var content = new StackPanel
+        {
+            MinWidth = 480,
+            Spacing = 10,
+        };
+        content.Children.Add(modeBox);
+        content.Children.Add(historyList);
+        content.Children.Add(clearButton);
+
+        var dialog = new ContentDialog
+        {
+            Title = "历史播放",
+            Content = content,
+            CloseButtonText = "关闭",
+            XamlRoot = XamlRoot,
+        };
+        await dialog.ShowLocalizedAsync();
+    }
+
+    private async void DeleteHistoryItem_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button { DataContext: OnlineHistoryItem item })
+        {
+            await Online.RemoveHistoryAsync(item);
+        }
     }
 }

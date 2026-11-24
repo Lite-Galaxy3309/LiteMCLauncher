@@ -39,6 +39,9 @@ public sealed class OnlineMusicService : ObservableObject
     private string _statusText = "输入关键词搜索网易云音乐";
     private bool _isSearching;
     private bool _isPlaying;
+    private string _playbackMode = "RepeatAll";
+    private readonly List<OnlineSong> _queue = [];
+    private int _queueIndex = -1;
 
     public OnlineMusicService()
     {
@@ -47,7 +50,11 @@ public sealed class OnlineMusicService : ObservableObject
         {
             AudioCategory = MediaPlayerAudioCategory.Media,
         };
-        _player.MediaEnded += (_, _) => SetPlaying(false);
+        _player.MediaEnded += (_, _) =>
+        {
+            SetPlaying(false);
+            _ = AdvanceAfterEndAsync();
+        };
         _player.MediaFailed += (_, args) =>
         {
             SetStatus($"播放失败：{args.ErrorMessage}");
@@ -71,6 +78,7 @@ public sealed class OnlineMusicService : ObservableObject
                 OnPropertyChanged(nameof(CurrentTitle));
                 OnPropertyChanged(nameof(CurrentArtist));
                 OnPropertyChanged(nameof(CurrentCoverUrl));
+                OnPropertyChanged(nameof(CurrentAlbum));
                 OnPropertyChanged(nameof(HasCurrentSong));
             }
         }
@@ -82,7 +90,30 @@ public sealed class OnlineMusicService : ObservableObject
 
     public string CurrentCoverUrl => CurrentSong?.CoverUrl ?? string.Empty;
 
+    public string CurrentAlbum => CurrentSong?.Album ?? string.Empty;
+
     public bool HasCurrentSong => CurrentSong is not null;
+
+    public string PlaybackMode
+    {
+        get => _playbackMode;
+        private set
+        {
+            if (SetProperty(ref _playbackMode, value))
+            {
+                OnPropertyChanged(nameof(PlaybackModeDisplay));
+            }
+        }
+    }
+
+    public string PlaybackModeDisplay => PlaybackMode switch
+    {
+        "RepeatOne" => "单曲循环",
+        "Shuffle" => "随机播放",
+        _ => "列表循环",
+    };
+
+    public bool HasQueue => _queue.Count > 1;
 
     public bool IsSearching
     {
@@ -127,6 +158,10 @@ public sealed class OnlineMusicService : ObservableObject
         {
             var settings = OnlineMusicSettings.Load();
             Cookie = settings.Cookie ?? string.Empty;
+            if (settings.PlaybackMode is "RepeatAll" or "RepeatOne" or "Shuffle")
+            {
+                PlaybackMode = settings.PlaybackMode;
+            }
 
             foreach (var item in settings.History ?? [])
             {
@@ -254,19 +289,66 @@ public sealed class OnlineMusicService : ObservableObject
         }
     }
 
-    public async Task PlayAsync(OnlineSong song, CancellationToken cancellationToken = default)
+    public Task PlayAsync(OnlineSong song, CancellationToken cancellationToken = default)
+    {
+        return PlayAsync(song, queue: null, cancellationToken);
+    }
+
+    public async Task PlayAsync(
+        OnlineSong song,
+        IEnumerable<OnlineSong>? queue,
+        CancellationToken cancellationToken = default)
     {
         if (song is null)
         {
             return;
         }
 
+        SetQueue(queue, song);
+        await PlayQueueIndexAsync(_queueIndex, cancellationToken);
+    }
+
+    private void SetQueue(IEnumerable<OnlineSong>? queue, OnlineSong current)
+    {
+        _queue.Clear();
+        if (queue is not null)
+        {
+            foreach (var item in queue)
+            {
+                _queue.Add(item);
+            }
+        }
+
+        if (_queue.Count == 0)
+        {
+            _queue.Add(current);
+        }
+
+        _queueIndex = _queue.FindIndex(item => item.Id == current.Id);
+        if (_queueIndex < 0)
+        {
+            _queue.Insert(0, current);
+            _queueIndex = 0;
+        }
+
+        OnPropertyChanged(nameof(HasQueue));
+    }
+
+    private async Task PlayQueueIndexAsync(int index, CancellationToken cancellationToken = default)
+    {
+        if (index < 0 || index >= _queue.Count)
+        {
+            return;
+        }
+
+        var song = _queue[index];
         var playable = await GetSongUrlAsync(song, cancellationToken);
         if (playable?.PlayUrl is null)
         {
             return;
         }
 
+        _queueIndex = index;
         AppServices.Music.Pause();
         CurrentSong = playable;
         _player.Source = MediaSource.CreateFromUri(new Uri(playable.PlayUrl));
@@ -277,15 +359,167 @@ public sealed class OnlineMusicService : ObservableObject
         await SaveAsync();
     }
 
+    public async Task NextAsync(bool manual = true)
+    {
+        if (_queue.Count == 0)
+        {
+            return;
+        }
+
+        if (!manual && PlaybackMode == "RepeatOne")
+        {
+            await ReplayCurrentAsync();
+            return;
+        }
+
+        var nextIndex = PlaybackMode == "Shuffle"
+            ? GetRandomQueueIndex()
+            : _queueIndex + 1;
+        if (nextIndex >= _queue.Count)
+        {
+            nextIndex = 0;
+        }
+
+        await PlayQueueIndexAsync(nextIndex);
+    }
+
+    public async Task PreviousAsync()
+    {
+        if (_queue.Count == 0)
+        {
+            return;
+        }
+
+        var previousIndex = PlaybackMode == "Shuffle"
+            ? GetRandomQueueIndex()
+            : _queueIndex - 1;
+        if (previousIndex < 0)
+        {
+            previousIndex = _queue.Count - 1;
+        }
+
+        await PlayQueueIndexAsync(previousIndex);
+    }
+
+    private int GetRandomQueueIndex()
+    {
+        if (_queue.Count <= 1)
+        {
+            return 0;
+        }
+
+        var index = _queueIndex;
+        while (index == _queueIndex)
+        {
+            index = Random.Shared.Next(_queue.Count);
+        }
+
+        return index;
+    }
+
+    private async Task ReplayCurrentAsync()
+    {
+        if (CurrentSong is null)
+        {
+            return;
+        }
+
+        if (_player.Source is null && !string.IsNullOrWhiteSpace(CurrentSong.PlayUrl))
+        {
+            _player.Source = MediaSource.CreateFromUri(new Uri(CurrentSong.PlayUrl));
+        }
+
+        if (_player.Source is null)
+        {
+            await PlayQueueIndexAsync(_queueIndex);
+            return;
+        }
+
+        _player.Position = TimeSpan.Zero;
+        _player.Play();
+        SetPlaying(true);
+        StatusText = $"正在播放：{CurrentSong.Name}";
+    }
+
+    private async Task AdvanceAfterEndAsync()
+    {
+        if (_queue.Count == 0)
+        {
+            return;
+        }
+
+        void Advance()
+        {
+            _ = NextAsync(manual: false);
+        }
+
+        if (_dispatcherQueue is not null && !_dispatcherQueue.HasThreadAccess)
+        {
+            _dispatcherQueue.TryEnqueue(Advance);
+        }
+        else
+        {
+            Advance();
+        }
+
+        await Task.CompletedTask;
+    }
+
+    public void CyclePlaybackMode()
+    {
+        PlaybackMode = PlaybackMode switch
+        {
+            "RepeatAll" => "RepeatOne",
+        "RepeatOne" => "单曲循环",
+            _ => "RepeatAll",
+        };
+        _ = SaveAsync();
+    }
+
+    public void SetPlaybackMode(string mode)
+    {
+        if (mode is "RepeatAll" or "RepeatOne" or "Shuffle")
+        {
+            PlaybackMode = mode;
+        }
+    }
+
     public Task PlayHistoryAsync(OnlineHistoryItem item, CancellationToken cancellationToken = default)
     {
-        return PlayAsync(new OnlineSong
+        var queue = History
+            .Select(historyItem => new OnlineSong
+            {
+                Id = historyItem.Id,
+                Name = historyItem.Name,
+                Artists = historyItem.Artists,
+                CoverUrl = historyItem.CoverUrl,
+            })
+            .ToList();
+        var song = queue.FirstOrDefault(candidate => candidate.Id == item.Id) ?? new OnlineSong
         {
             Id = item.Id,
             Name = item.Name,
             Artists = item.Artists,
             CoverUrl = item.CoverUrl,
-        }, cancellationToken);
+        };
+        return PlayAsync(song, queue, cancellationToken);
+    }
+
+    public async Task RemoveHistoryAsync(OnlineHistoryItem item)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        History.Remove(item);
+        await SaveAsync();
+    }
+
+    public async Task ClearHistoryAsync()
+    {
+        History.Clear();
+        await SaveAsync();
     }
 
     public void TogglePlayPause()
@@ -516,6 +750,7 @@ public sealed class OnlineMusicService : ObservableObject
                 Cookie = Cookie,
                 History = History.ToList(),
                 SearchHistory = SearchHistory.ToList(),
+                PlaybackMode = PlaybackMode,
             });
         }
         catch
@@ -571,6 +806,8 @@ public sealed class OnlineMusicSettings
     public List<OnlineHistoryItem>? History { get; set; }
 
     public List<string>? SearchHistory { get; set; }
+
+    public string? PlaybackMode { get; set; }
 
     private static string FilePath => Path.Combine(AppPaths.DataDirectory, "online-music.json");
 
