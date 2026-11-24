@@ -208,6 +208,11 @@ public sealed partial class MainWindow : Window
         try
         {
             LauncherLanguageService.Apply(NavFrame.Content as FrameworkElement);
+            if (NavFrame.Content is FrameworkElement page)
+            {
+                page.Loaded += (_, _) =>
+                    LauncherLanguageService.Apply(NavFrame.Content as FrameworkElement);
+            }
         }
         catch
         {

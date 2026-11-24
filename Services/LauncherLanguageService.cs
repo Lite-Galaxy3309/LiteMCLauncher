@@ -194,6 +194,102 @@ public static class LauncherLanguageService
         ["正在检查游戏资源完整性并准备启动"] = "Checking game files and preparing to launch",
         ["没有可用的 Java 运行时。请先在“设置 > Java 管理”中安装 Java 8、17、21 或 25，或指定 Java 路径。"] = "No Java runtime is available. Install Java 8, 17, 21 or 25 in Settings > Java management, or specify a Java path.",
         ["自动检测：已为"] = "Auto-detect: selected",
+
+        // Additional static UI strings
+        ["BMCLAPI 镜像服务；仅在设置中切换为 BMCLAPI 源时使用。"] = "BMCLAPI mirror service; used only when the download source is set to BMCLAPI.",
+        ["Cookie 只保存在本机启动器数据目录，用于网易云请求头；不会上传到 GitHub 或第三方。"] = "The Cookie is stored only in local launcher data and sent as a NetEase request header; it is never uploaded to GitHub or third parties.",
+        ["Fabric 游戏版本与 Loader 版本元数据。"] = "Fabric game and loader version metadata.",
+        ["Forge 构建元数据与安装器。"] = "Forge build metadata and installer.",
+        ["LiteMCLauncher 是独立的第三方启动器，与 Mojang Studios、Microsoft 及 Modrinth 均无隶属或赞助关系。Minecraft 是 Mojang Studios 的商标。"] = "LiteMCLauncher is an independent third-party launcher and is not affiliated with or sponsored by Mojang Studios, Microsoft or Modrinth. Minecraft is a trademark of Mojang Studios.",
+        ["Microsoft / Xbox / Minecraft 登录与账号会话链路。"] = "Microsoft / Xbox / Minecraft sign-in and account session chain.",
+        ["Minecraft 官方新闻、Java 更新说明与启动器内容图片。"] = "Official Minecraft news, Java update notes and launcher content images.",
+        ["Minecraft 版本安装、启动参数和进程构建的核心库。"] = "Core library for Minecraft installation, launch arguments and process building.",
+        ["Mod 搜索、项目详情和下载信息。"] = "Mod search, project details and download information.",
+        ["Mods 目录"] = "Mods folder",
+        ["NeoForge 构建元数据与安装器。"] = "NeoForge build metadata and installer.",
+        ["Netease_url（网易云音乐解析参考）"] = "Netease_url (NetEase Cloud Music reference)",
+        ["Xbox Live 与 Minecraft 认证链路的辅助库。"] = "Helper library for the Xbox Live and Minecraft authentication chain.",
+        ["一个轻量、现代的 Minecraft 启动器，专注于快速的实例管理与流畅的启动体验。"] = "A lightweight, modern Minecraft launcher focused on fast instance management and a smooth launch experience.",
+        ["上一页"] = "Previous page",
+        ["下一页"] = "Next page",
+        ["下载并安装"] = "Download and install",
+        ["个性化"] = "Personalization",
+        ["主题色"] = "Accent color",
+        ["了解 LiteMCLauncher 的版本与作者信息。"] = "Version and author information for LiteMCLauncher.",
+        ["从 music.163.com 的 Network 请求头复制 Cookie；可留空"] = "Copy the Cookie from a Network request header on music.163.com; optional.",
+        ["作者"] = "Author",
+        ["例如：-XX:+UseG1GC"] = "For example: -XX:+UseG1GC",
+        ["保存登录"] = "Save login",
+        ["修改后点击右上角“保存设置”；Java、内存与 JVM 参数将在下次启动游戏时生效。"] = "After changes, click “Save settings” at the top right; Java, memory and JVM arguments apply on the next game launch.",
+        ["像 Windows 个性化一样调整透明效果、主题色与背景。"] = "Adjust transparency, accent color and background like Windows personalization.",
+        ["免责声明"] = "Disclaimer",
+        ["发布通道"] = "Release channel",
+        ["启动器的现代 Windows 桌面 UI 与窗口能力。"] = "Modern Windows desktop UI and window capabilities for the launcher.",
+        ["启动游戏后最小化"] = "Minimize after game launch",
+        ["国内网络推荐清华镜像；挂了代理可以选择 Adoptium 官方源。"] = "The Tsinghua mirror is recommended in mainland China; use the official Adoptium source when a proxy is available.",
+        ["图片"] = "Image",
+        ["在线音乐搜索、播放地址和 MUSIC_U Cookie 请求头的实现参考；MIT 许可证。"] = "Reference for online music search, playback URLs and the MUSIC_U Cookie request header; MIT licensed.",
+        ["存储"] = "Storage",
+        ["安装最新版本"] = "Install latest version",
+        ["已下载的库文件与资源缓存，占用约 1.8 GB。"] = "Downloaded libraries and asset cache, using about 1.8 GB.",
+        ["开启后使用 Mica 半透明背景；关闭后使用不透明背景。"] = "Enable a translucent Mica background; disable it for an opaque background.",
+        ["当前游戏目录"] = "Current game folder",
+        ["当前版本"] = "Current version",
+        ["恢复默认"] = "Restore defaults",
+        ["感谢以下开源项目、平台和文档为 LiteMCLauncher 提供支持。"] = "Thanks to these open-source projects, platforms and documentation for supporting LiteMCLauncher.",
+        ["打开目录"] = "Open folder",
+        ["打开项目页面"] = "Open project page",
+        ["控制下载、更新与界面行为。"] = "Control downloads, updates and interface behavior.",
+        ["搜索"] = "Search",
+        ["搜索 Mod 或整合包，并下载到当前实例的对应目录。"] = "Search mods or modpacks and download them to the matching folder of the current instance.",
+        ["搜索 Mod、整合包或作者..."] = "Search mods, modpacks or authors...",
+        ["搜索历史"] = "Search history",
+        ["搜索并播放网易云音乐；登录 Cookie 可访问账号相关音质和内容。"] = "Search and play NetEase Cloud Music; a login Cookie can access account-related quality and content.",
+        ["搜索歌曲、歌手或专辑"] = "Search songs, artists or albums",
+        ["播放"] = "Play",
+        ["整合包"] = "Modpacks",
+        ["日志文件"] = "Log files",
+        ["日本語"] = "Japanese",
+        ["更新于"] = "Updated",
+        ["最近播放"] = "Recently played",
+        ["未找到本地实例"] = "No local instances found",
+        ["未选择图片"] = "No image selected",
+        ["本项目仅用于学习与个人使用，请在遵守 Minecraft 最终用户许可协议的前提下使用。"] = "This project is for learning and personal use only; use it in compliance with the Minecraft End User License Agreement.",
+        ["构建时间"] = "Build date",
+        ["正在检测已安装的 Java 运行时…"] = "Detecting installed Java runtimes…",
+        ["清理缓存"] = "Clear cache",
+        ["版本"] = "Version",
+        ["版本、实例、Mod 与存档都保存在此目录下。"] = "Versions, instances, mods and saves are stored in this folder.",
+        ["版本信息"] = "Version information",
+        ["界面主题"] = "Interface theme",
+        ["繁體中文"] = "Traditional Chinese",
+        ["纯色"] = "Solid color",
+        ["缓存"] = "Cache",
+        ["网易云 Cookie / MUSIC_U"] = "NetEase Cookie / MUSIC_U",
+        ["背景"] = "Background",
+        ["背景色"] = "Background color",
+        ["自动检测，或从已安装的 Java 中指定启动器的默认运行时。"] = "Auto-detect, or choose the launcher's default runtime from installed Java.",
+        ["覆盖系统强调色，应用于按钮、选中项与强调图标。"] = "Override the system accent color for buttons, selection and accent icons.",
+        ["让启动器在游戏启动后自动最小化。"] = "Automatically minimize the launcher after the game starts.",
+        ["设备码登录、Token 缓存和静默刷新。"] = "Device-code login, token cache and silent refresh.",
+        ["该项目使用了 AI，不喜勿喷。"] = "This project uses AI; please be kind.",
+        ["详情"] = "Details",
+        ["跟随系统时会自动适配 Windows 主题。"] = "Follow Windows theme automatically.",
+        ["输入关键词开始搜索"] = "Enter a keyword to search",
+        ["返回 Mods 列表"] = "Back to Mods",
+        ["选择图片"] = "Choose image",
+        ["选择账号"] = "Select account",
+        ["选择颜色"] = "Choose color",
+        ["透明效果"] = "Transparency",
+        ["重新扫描"] = "Rescan",
+        ["重新读取版本清单"] = "Reload version manifest",
+        ["镜像源可以提升国内网络下的下载速度。"] = "A mirror can improve download speed on mainland China networks.",
+        ["项目介绍（展开查看详情）"] = "Project description (expand for details)",
+        ["项目截图"] = "Project screenshots",
+        ["鸣谢"] = "Credits",
+        ["默认 Java"] = "Default Java",
+        ["默认使用 Mica，也可以选择纯色或本地图片。"] = "Mica by default; a solid color or local image can also be used.",
+        ["默认（Mica）"] = "Default (Mica)",
     };
 
     private static readonly Dictionary<string, string> EnglishToChinese = BuildReverseMap();
@@ -229,10 +325,123 @@ public static class LauncherLanguageService
 
         if (IsEnglish)
         {
-            return ChineseToEnglish.TryGetValue(text, out var english) ? english : text;
+            if (ChineseToEnglish.TryGetValue(text, out var english))
+            {
+                return english;
+            }
+
+            return TranslateDynamic(text);
         }
 
         return EnglishToChinese.TryGetValue(text, out var chinese) ? chinese : text;
+    }
+
+    private static string TranslateDynamic(string text)
+    {
+        if (text.StartsWith("已安装 ", StringComparison.Ordinal) &&
+            text.Contains(" 个 Java 运行时：", StringComparison.Ordinal))
+        {
+            return text
+                .Replace(" 个 Java 运行时：", " Java runtimes: ", StringComparison.Ordinal)
+                .Replace("。安装目录：", ". Install folder: ", StringComparison.Ordinal);
+        }
+
+        if (text.StartsWith("尚未安装由启动器管理的 Java。安装目录：", StringComparison.Ordinal))
+        {
+            return text.Replace(
+                "尚未安装由启动器管理的 Java。安装目录：",
+                "No launcher-managed Java is installed. Install folder: ",
+                StringComparison.Ordinal);
+        }
+
+        if (text.StartsWith("已分配 ", StringComparison.Ordinal) &&
+            text.EndsWith(" MB 内存", StringComparison.Ordinal))
+        {
+            return text
+                .Replace("已分配 ", "Allocated ", StringComparison.Ordinal)
+                .Replace(" MB 内存", " MB RAM", StringComparison.Ordinal);
+        }
+
+        if (text.StartsWith("Java ", StringComparison.Ordinal) &&
+            text.EndsWith(" 已就绪", StringComparison.Ordinal))
+        {
+            return text[..^" 已就绪".Length] + " ready";
+        }
+
+        if (text.StartsWith("离线 UUID · ", StringComparison.Ordinal))
+        {
+            return "Offline UUID · " + text["离线 UUID · ".Length..];
+        }
+
+        if (text.StartsWith("离线模式 · ", StringComparison.Ordinal))
+        {
+            return "Offline mode · " + text["离线模式 · ".Length..];
+        }
+
+        if (text.StartsWith("已登录 · ", StringComparison.Ordinal))
+        {
+            return "Signed in · " + text["已登录 · ".Length..];
+        }
+
+        if (text.StartsWith("微软账号已登录 · ", StringComparison.Ordinal))
+        {
+            return "Microsoft account signed in · " + text["微软账号已登录 · ".Length..];
+        }
+
+        if (text.StartsWith("微软账号需要重新登录 · ", StringComparison.Ordinal))
+        {
+            return "Microsoft account needs sign-in · " + text["微软账号需要重新登录 · ".Length..];
+        }
+
+        if (text.StartsWith("正在读取 ", StringComparison.Ordinal))
+        {
+            return "Loading " + text["正在读取 ".Length..];
+        }
+
+        if (text.StartsWith("正在扫描 ", StringComparison.Ordinal))
+        {
+            return "Scanning " + text["正在扫描 ".Length..];
+        }
+
+        if (text.StartsWith("第 ", StringComparison.Ordinal) &&
+            text.EndsWith(" 页", StringComparison.Ordinal))
+        {
+            return "Page " + text["第 ".Length..^" 页".Length];
+        }
+
+        if (text.StartsWith("正在检测 ", StringComparison.Ordinal))
+        {
+            return "Detecting " + text["正在检测 ".Length..];
+        }
+
+        if (text.StartsWith("共 ", StringComparison.Ordinal) &&
+            text.EndsWith(" 个实例", StringComparison.Ordinal))
+        {
+            return text["共 ".Length..^" 个实例".Length] + " instances";
+        }
+
+        if (text.EndsWith(" 个结果", StringComparison.Ordinal))
+        {
+            return text[..^" 个结果".Length] + " results";
+        }
+
+        if (text.EndsWith(" 已暂停。", StringComparison.Ordinal))
+        {
+            return "Paused.";
+        }
+
+        if (text.StartsWith("正在播放：", StringComparison.Ordinal))
+        {
+            return "Playing: " + text["正在播放：".Length..];
+        }
+
+        if (text.StartsWith("找到 ", StringComparison.Ordinal) &&
+            text.EndsWith(" 首歌曲。", StringComparison.Ordinal))
+        {
+            return "Found " + text["找到 ".Length..^" 首歌曲。".Length] + " songs.";
+        }
+
+        return text;
     }
 
     public static void Apply(DependencyObject? root)
@@ -318,6 +527,27 @@ public static class LauncherLanguageService
                 }
 
                 textBox.PlaceholderText = Translate(textBox.PlaceholderText);
+                break;
+
+            case PasswordBox passwordBox:
+                if (passwordBox.Header is string passwordHeader)
+                {
+                    passwordBox.Header = Translate(passwordHeader);
+                }
+
+                passwordBox.PlaceholderText = Translate(passwordBox.PlaceholderText);
+                break;
+
+            case CheckBox checkBox when checkBox.Content is string checkText:
+                checkBox.Content = Translate(checkText);
+                break;
+
+            case RadioButton radioButton when radioButton.Content is string radioText:
+                radioButton.Content = Translate(radioText);
+                break;
+
+            case MenuFlyoutItem menuItem when menuItem.Text is { Length: > 0 } menuText:
+                menuItem.Text = Translate(menuText);
                 break;
 
             case NumberBox numberBox when numberBox.Header is string numberHeader:

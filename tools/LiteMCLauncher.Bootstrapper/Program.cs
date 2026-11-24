@@ -7,7 +7,7 @@ namespace LiteMCLauncher.Bootstrapper;
 
 internal static class Program
 {
-    private const string AppVersion = "0.5.1";
+    private const string AppVersion = "0.5.2";
 
     [STAThread]
     private static void Main()
