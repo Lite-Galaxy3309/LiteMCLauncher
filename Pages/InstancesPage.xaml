@@ -73,7 +73,6 @@
                     <ComboBoxItem Content="Fabric" />
                     <ComboBoxItem Content="Forge" />
                     <ComboBoxItem Content="NeoForge" />
-                    <ComboBoxItem Content="Quilt" />
                     <ComboBoxItem Content="原版" />
                 </ComboBox>
                 <ComboBox

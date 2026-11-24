@@ -176,7 +176,7 @@ public sealed partial class DownloadsPage : Page
             }
         };
 
-        var dialogTask = dialog.ShowAsync().AsTask();
+        var dialogTask = dialog.ShowLocalizedAsync();
 
         try
         {
@@ -307,7 +307,7 @@ public sealed partial class DownloadsPage : Page
             XamlRoot = XamlRoot,
         };
 
-        var result = await dialog.ShowAsync();
+        var result = await dialog.ShowLocalizedAsync();
         if (result != ContentDialogResult.Primary)
         {
             return (false, null);
@@ -336,6 +336,6 @@ public sealed partial class DownloadsPage : Page
             XamlRoot = XamlRoot,
         };
 
-        await dialog.ShowAsync();
+        await dialog.ShowLocalizedAsync();
     }
 }

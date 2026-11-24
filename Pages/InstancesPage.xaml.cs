@@ -115,7 +115,7 @@ public sealed partial class InstancesPage : Page
             XamlRoot = XamlRoot,
         };
 
-        var dialogTask = dialog.ShowAsync().AsTask();
+        var dialogTask = dialog.ShowLocalizedAsync();
 
         try
         {
@@ -163,7 +163,7 @@ public sealed partial class InstancesPage : Page
             XamlRoot = XamlRoot,
         };
 
-        await dialog.ShowAsync();
+        await dialog.ShowLocalizedAsync();
     }
 
     private async void RenameInstance_Click(object sender, RoutedEventArgs e)
@@ -204,7 +204,7 @@ public sealed partial class InstancesPage : Page
             XamlRoot = XamlRoot,
         };
 
-        if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+        if (await dialog.ShowLocalizedAsync() != ContentDialogResult.Primary)
         {
             return;
         }
@@ -233,7 +233,9 @@ public sealed partial class InstancesPage : Page
             Title = "删除实例",
             Content = new TextBlock
             {
-                Text = $"将删除实例“{instance.DisplayName}”的版本文件和实例游戏目录（包括世界、资源包、光影、Mods 和日志）。\n\n此操作不可恢复。",
+                Text = LauncherLanguageService.IsEnglish
+                    ? $"Delete instance \"{instance.DisplayName}\" and its version files and instance game folder (worlds, resource packs, shaders, mods and logs).\n\nThis cannot be undone."
+                    : $"将删除实例“{instance.DisplayName}”的版本文件和实例游戏目录（包括世界、资源包、光影、Mods 和日志）。\n\n此操作不可恢复。",
                 TextWrapping = TextWrapping.Wrap,
             },
             PrimaryButtonText = "删除",
@@ -242,7 +244,7 @@ public sealed partial class InstancesPage : Page
             XamlRoot = XamlRoot,
         };
 
-        if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+        if (await dialog.ShowLocalizedAsync() != ContentDialogResult.Primary)
         {
             return;
         }

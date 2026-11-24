@@ -1,4 +1,5 @@
 using LiteMCLauncher.Models;
+using LiteMCLauncher.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -29,7 +30,7 @@ public static class LaunchPreflightDialog
                 XamlRoot = xamlRoot,
             };
 
-            await loginDialog.ShowAsync();
+            await loginDialog.ShowLocalizedAsync();
             return false;
         }
 
@@ -61,7 +62,7 @@ public static class LaunchPreflightDialog
             XamlRoot = xamlRoot,
         };
 
-        var choice = await dialog.ShowAsync();
+        var choice = await dialog.ShowLocalizedAsync();
         if (choice == ContentDialogResult.Secondary)
         {
             frame.Navigate(typeof(SettingsPage));

@@ -1,6 +1,8 @@
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using System.Runtime.CompilerServices;
 
 namespace LiteMCLauncher.Services;
 
@@ -290,9 +292,43 @@ public static class LauncherLanguageService
         ["默认 Java"] = "Default Java",
         ["默认使用 Mica，也可以选择纯色或本地图片。"] = "Mica by default; a solid color or local image can also be used.",
         ["默认（Mica）"] = "Default (Mica)",
+
+        ["尚未添加账号"] = "No account added yet",
+        ["已登录"] = "Signed in",
+        ["正在读取实例…"] = "Loading instances…",
+        ["正在扫描 .minecraft/versions"] = "Scanning .minecraft/versions",
+        ["扫描失败"] = "Scan failed",
+        ["没有匹配的实例"] = "No matching instances",
+        ["刷新版本列表"] = "Refresh versions",
+        ["安装时附加的模组加载器"] = "Mod loader for installation",
+        ["正在读取 Mojang 版本清单…"] = "Loading Mojang version manifest…",
+        ["尚未搜索"] = "No search yet",
+        ["输入关键词后开始搜索"] = "Enter a keyword to start searching",
+        ["搜索 Mod"] = "Search Mods",
+        ["搜索 Mod 或整合包"] = "Search mods or modpacks",
+        ["已暂停。"] = "Paused.",
+        ["尚未安装由启动器管理的 Java。"] = "No launcher-managed Java is installed.",
+        ["输入关键词搜索网易云音乐"] = "Enter a keyword to search NetEase Cloud Music",
+
+        ["移除账号"] = "Remove account",
+        ["添加 Microsoft 账号"] = "Add Microsoft account",
+
+        ["尝试调整搜索关键词或筛选条件。"] = "Try adjusting the search keyword or filters.",
+
+        ["删除实例"] = "Delete instance",
+        ["重命名实例"] = "Rename instance",
+        ["保存"] = "Save",
+        ["输入实例名称"] = "Enter instance name",
+        ["名称仅用于启动器显示，不会修改版本目录。留空可恢复为默认名称。"] = "The name is only shown in the launcher and does not change the version folder. Leave it empty to restore the default name.",
+        ["正在准备启动..."] = "Preparing to launch...",
+        ["启动失败"] = "Launch failed",
+
+        ["尚未找到日志文件。启动一次游戏后即可查看。"] = "No log files found yet. Launch the game once to view logs.",
     };
 
     private static readonly Dictionary<string, string> EnglishToChinese = BuildReverseMap();
+    private static readonly ConditionalWeakTable<TextBlock, object> HookedTextBlocks = new();
+    private static readonly ConditionalWeakTable<ComboBox, object> HookedComboBoxes = new();
 
     private static Dictionary<string, string> BuildReverseMap()
     {
@@ -338,10 +374,30 @@ public static class LauncherLanguageService
 
     private static string TranslateDynamic(string text)
     {
-        if (text.StartsWith("已安装 ", StringComparison.Ordinal) &&
-            text.Contains(" 个 Java 运行时：", StringComparison.Ordinal))
+        if (text.Contains(" · 原版", StringComparison.Ordinal))
         {
-            return text
+            text = text.Replace(" · 原版", " · Vanilla", StringComparison.Ordinal);
+        }
+
+        if (text.StartsWith("昨天 ", StringComparison.Ordinal))
+        {
+            return "Yesterday " + text["昨天 ".Length..];
+        }
+
+        if (text.StartsWith("今天 ", StringComparison.Ordinal))
+        {
+            return "Today " + text["今天 ".Length..];
+        }
+
+        if (text.StartsWith("前天 ", StringComparison.Ordinal))
+        {
+            return "2 days ago " + text["前天 ".Length..];
+        }
+
+        if (text.StartsWith("已安装 ", StringComparison.Ordinal) &&
+            text.Contains("Java 运行时", StringComparison.Ordinal))
+        {
+            return ("Installed " + text["已安装 ".Length..])
                 .Replace(" 个 Java 运行时：", " Java runtimes: ", StringComparison.Ordinal)
                 .Replace("。安装目录：", ". Install folder: ", StringComparison.Ordinal);
         }
@@ -375,22 +431,38 @@ public static class LauncherLanguageService
 
         if (text.StartsWith("离线模式 · ", StringComparison.Ordinal))
         {
-            return "Offline mode · " + text["离线模式 · ".Length..];
+            return "Offline mode · " + Translate(text["离线模式 · ".Length..]);
         }
 
         if (text.StartsWith("已登录 · ", StringComparison.Ordinal))
         {
-            return "Signed in · " + text["已登录 · ".Length..];
+            return "Signed in · " + Translate(text["已登录 · ".Length..]);
         }
 
         if (text.StartsWith("微软账号已登录 · ", StringComparison.Ordinal))
         {
-            return "Microsoft account signed in · " + text["微软账号已登录 · ".Length..];
+            return "Microsoft account signed in · " + Translate(text["微软账号已登录 · ".Length..]);
         }
 
         if (text.StartsWith("微软账号需要重新登录 · ", StringComparison.Ordinal))
         {
-            return "Microsoft account needs sign-in · " + text["微软账号需要重新登录 · ".Length..];
+            return "Microsoft account needs sign-in · " + Translate(text["微软账号需要重新登录 · ".Length..]);
+        }
+
+        if (text.StartsWith("请选择实例 · ", StringComparison.Ordinal))
+        {
+            return "Select an instance · " + Translate(text["请选择实例 · ".Length..]);
+        }
+
+        if (text.StartsWith("正在检测 ", StringComparison.Ordinal) &&
+            text.Contains(" 支持的游戏版本", StringComparison.Ordinal))
+        {
+            var rest = text["正在检测 ".Length..];
+            var suffixIndex = rest.IndexOf(" 支持的游戏版本", StringComparison.Ordinal);
+            if (suffixIndex > 0)
+            {
+                return "Detecting supported game versions for " + Translate(rest[..suffixIndex]);
+            }
         }
 
         if (text.StartsWith("正在读取 ", StringComparison.Ordinal))
@@ -409,9 +481,25 @@ public static class LauncherLanguageService
             return "Page " + text["第 ".Length..^" 页".Length];
         }
 
+        if (text.StartsWith("启动 ", StringComparison.Ordinal))
+        {
+            return "Launch " + text["启动 ".Length..];
+        }
+
         if (text.StartsWith("正在检测 ", StringComparison.Ordinal))
         {
-            return "Detecting " + text["正在检测 ".Length..];
+            return "Detecting " + Translate(text["正在检测 ".Length..]);
+        }
+
+        if (text.StartsWith("正在搜索 ", StringComparison.Ordinal))
+        {
+            return "Searching " + text["正在搜索 ".Length..];
+        }
+
+        if (text.StartsWith("共 ", StringComparison.Ordinal) &&
+            text.EndsWith(" 个版本", StringComparison.Ordinal))
+        {
+            return text["共 ".Length..^" 个版本".Length] + " versions";
         }
 
         if (text.StartsWith("共 ", StringComparison.Ordinal) &&
@@ -456,7 +544,14 @@ public static class LauncherLanguageService
 
         foreach (var element in elements)
         {
-            TranslateElement(element);
+            try
+            {
+                TranslateElement(element);
+            }
+            catch
+            {
+                // One unsupported template child must not block the rest.
+            }
         }
     }
 
@@ -478,12 +573,72 @@ public static class LauncherLanguageService
         }
     }
 
-    private static void TranslateElement(DependencyObject element)
+    private static void TranslateComboBoxItems(ComboBox comboBox)
     {
+        var selectedIndex = comboBox.SelectedIndex;
+        foreach (var item in comboBox.Items)
+        {
+            if (item is ComboBoxItem comboItem && comboItem.Content is string text)
+            {
+                comboItem.Content = Translate(text);
+            }
+            else if (item is FrameworkElement element)
+            {
+                Apply(element);
+            }
+        }
+
+        if (selectedIndex >= 0)
+        {
+            comboBox.SelectedIndex = selectedIndex;
+        }
+    }
+
+    private static void OnTextBlockTextChanged(DependencyObject sender, DependencyProperty dp)
+    {
+        if (!IsEnglish || sender is not TextBlock textBlock || string.IsNullOrEmpty(textBlock.Text))
+        {
+            return;
+        }
+
+        var translated = Translate(textBlock.Text);
+        if (!string.Equals(translated, textBlock.Text, StringComparison.Ordinal))
+        {
+            textBlock.Text = translated;
+        }
+    }
+
+    private static void TranslateElement(DependencyObject element)
+    {        if (element is FrameworkElement frameworkElement)
+        {
+            var automationName = AutomationProperties.GetName(frameworkElement);
+            if (!string.IsNullOrWhiteSpace(automationName))
+            {
+                AutomationProperties.SetName(frameworkElement, Translate(automationName));
+            }
+
+            if (ToolTipService.GetToolTip(frameworkElement) is string toolTip)
+            {
+                ToolTipService.SetToolTip(frameworkElement, Translate(toolTip));
+            }
+        }
+
         switch (element)
         {
-            case TextBlock textBlock when !string.IsNullOrEmpty(textBlock.Text):
-                textBlock.Text = Translate(textBlock.Text);
+            case TextBlock textBlock:
+                if (!HookedTextBlocks.TryGetValue(textBlock, out _))
+                {
+                    HookedTextBlocks.Add(textBlock, new object());
+                    textBlock.RegisterPropertyChangedCallback(
+                        TextBlock.TextProperty,
+                        OnTextBlockTextChanged);
+                }
+
+                if (!string.IsNullOrEmpty(textBlock.Text))
+                {
+                    textBlock.Text = Translate(textBlock.Text);
+                }
+
                 break;
 
             case Button button when button.Content is string buttonText:
@@ -558,6 +713,13 @@ public static class LauncherLanguageService
                 if (comboBox.Header is string comboHeader)
                 {
                     comboBox.Header = Translate(comboHeader);
+                }
+
+                TranslateComboBoxItems(comboBox);
+                if (!HookedComboBoxes.TryGetValue(comboBox, out _))
+                {
+                    HookedComboBoxes.Add(comboBox, new object());
+                    comboBox.DropDownOpened += (_, _) => TranslateComboBoxItems(comboBox);
                 }
 
                 break;

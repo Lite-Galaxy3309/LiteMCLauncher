@@ -119,7 +119,7 @@ public sealed partial class InstanceManagePage : Page
             XamlRoot = XamlRoot,
         };
 
-        await dialog.ShowAsync();
+        await dialog.ShowLocalizedAsync();
     }
 
     private void OpenItem_Click(object sender, RoutedEventArgs e)

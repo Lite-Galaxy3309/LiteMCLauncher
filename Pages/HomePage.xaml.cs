@@ -219,7 +219,7 @@ public sealed partial class HomePage : Page
             XamlRoot = XamlRoot,
         };
 
-        if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+        if (await dialog.ShowLocalizedAsync() != ContentDialogResult.Primary)
         {
             return;
         }
@@ -266,7 +266,7 @@ public sealed partial class HomePage : Page
             XamlRoot = XamlRoot,
         };
 
-        var result = await dialog.ShowAsync();
+        var result = await dialog.ShowLocalizedAsync();
         if (result != ContentDialogResult.Primary)
         {
             return;
@@ -324,7 +324,7 @@ public sealed partial class HomePage : Page
 
         try
         {
-            dialogTask = dialog.ShowAsync().AsTask();
+            dialogTask = dialog.ShowLocalizedAsync();
 
             var account = await _authService.SignInWithDeviceCodeAsync(
                 OnDeviceCodeReceivedAsync,
@@ -478,7 +478,7 @@ public sealed partial class HomePage : Page
             }
         };
 
-        var dialogTask = dialog.ShowAsync().AsTask();
+        var dialogTask = dialog.ShowLocalizedAsync();
 
         try
         {
@@ -670,7 +670,7 @@ public sealed partial class HomePage : Page
             XamlRoot = XamlRoot,
         };
 
-        await dialog.ShowAsync();
+        await dialog.ShowLocalizedAsync();
     }
 
     private static string GetErrorMessage(Exception exception)

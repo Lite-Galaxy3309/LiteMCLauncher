@@ -37,6 +37,8 @@ public sealed partial class MainWindow : Window
 
     private bool _isSyncingSelection;
 
+    private long _lastLanguageApplyTick;
+
     public MainWindow()
     {
         InitializeComponent();
@@ -66,12 +68,30 @@ public sealed partial class MainWindow : Window
 
         NavFrame.Navigated += NavFrame_Navigated;
         NavigateTo("home");
-        try
+        ApplyLanguage();
+    }
+
+    public void ApplyLanguage()
+    {
+        LauncherLanguageService.Apply(Content as FrameworkElement);
+
+        foreach (var item in NavView.MenuItems.OfType<NavigationViewItem>())
         {
-            LauncherLanguageService.Apply(Content as FrameworkElement);
+            if (item.Content is string content)
+            {
+                item.Content = LauncherLanguageService.Translate(content);
+            }
         }
-        catch
+
+        if (NavView.FooterMenuItems is not null)
         {
+            foreach (var item in NavView.FooterMenuItems.OfType<NavigationViewItem>())
+            {
+                if (item.Content is string content)
+                {
+                    item.Content = LauncherLanguageService.Translate(content);
+                }
+            }
         }
     }
 
@@ -212,6 +232,22 @@ public sealed partial class MainWindow : Window
             {
                 page.Loaded += (_, _) =>
                     LauncherLanguageService.Apply(NavFrame.Content as FrameworkElement);
+                page.LayoutUpdated += (_, _) =>
+                {
+                    if (!LauncherLanguageService.IsEnglish)
+                    {
+                        return;
+                    }
+
+                    var now = Environment.TickCount64;
+                    if (now - _lastLanguageApplyTick < 400)
+                    {
+                        return;
+                    }
+
+                    _lastLanguageApplyTick = now;
+                    LauncherLanguageService.Apply(NavFrame.Content as FrameworkElement);
+                };
             }
         }
         catch

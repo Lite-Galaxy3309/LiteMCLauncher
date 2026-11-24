@@ -123,7 +123,7 @@ public sealed partial class ModDetailsPage : Page
             }
         };
 
-        var dialogTask = dialog.ShowAsync().AsTask();
+        var dialogTask = dialog.ShowLocalizedAsync();
 
         try
         {
@@ -197,6 +197,6 @@ public sealed partial class ModDetailsPage : Page
             XamlRoot = XamlRoot,
         };
 
-        await dialog.ShowAsync();
+        await dialog.ShowLocalizedAsync();
     }
 }

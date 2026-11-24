@@ -140,7 +140,14 @@ public sealed partial class SettingsPage : Page
 
         _settingsService.Save();
         LauncherLanguageService.SetLanguage(settings.LauncherLanguage);
-        LauncherLanguageService.Apply(App.MainWindow?.Content as FrameworkElement);
+        if (App.MainWindow is MainWindow mainWindow)
+        {
+            mainWindow.ApplyLanguage();
+        }
+        else
+        {
+            LauncherLanguageService.Apply(App.MainWindow?.Content as FrameworkElement);
+        }
         PersonalizationService.Apply(refreshExistingControls: true);
         SettingsStatusText.Text = LauncherLanguageService.IsEnglish
             ? "Settings saved. Java, memory and JVM arguments apply the next time you launch the game."
@@ -250,7 +257,7 @@ public sealed partial class SettingsPage : Page
             XamlRoot = XamlRoot,
         };
 
-        return await dialog.ShowAsync() == ContentDialogResult.Primary
+        return await dialog.ShowLocalizedAsync() == ContentDialogResult.Primary
             ? picker.Color
             : null;
     }
@@ -453,7 +460,7 @@ public sealed partial class SettingsPage : Page
             }
         };
 
-        var dialogTask = dialog.ShowAsync().AsTask();
+        var dialogTask = dialog.ShowLocalizedAsync();
 
         try
         {
@@ -598,7 +605,7 @@ public sealed partial class SettingsPage : Page
             XamlRoot = XamlRoot,
         };
 
-        await dialog.ShowAsync();
+        await dialog.ShowLocalizedAsync();
     }
 
     private static string GetErrorMessage(Exception exception)

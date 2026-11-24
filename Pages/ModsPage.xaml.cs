@@ -157,7 +157,7 @@ public sealed partial class ModsPage : Page
             XamlRoot = XamlRoot,
         };
 
-        if (await nameDialog.ShowAsync() != ContentDialogResult.Primary)
+        if (await nameDialog.ShowLocalizedAsync() != ContentDialogResult.Primary)
         {
             return;
         }
@@ -215,7 +215,7 @@ public sealed partial class ModsPage : Page
             }
         };
 
-        var dialogTask = dialog.ShowAsync().AsTask();
+        var dialogTask = dialog.ShowLocalizedAsync();
 
         try
         {
@@ -339,7 +339,7 @@ public sealed partial class ModsPage : Page
             }
         };
 
-        var dialogTask = dialog.ShowAsync().AsTask();
+        var dialogTask = dialog.ShowLocalizedAsync();
 
         try
         {
@@ -418,6 +418,6 @@ public sealed partial class ModsPage : Page
             XamlRoot = XamlRoot,
         };
 
-        await dialog.ShowAsync();
+        await dialog.ShowLocalizedAsync();
     }
 }
