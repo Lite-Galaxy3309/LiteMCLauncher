@@ -381,6 +381,8 @@ public static class LauncherLanguageService
         ["种子查看器内嵌网页所使用的浏览器运行时。"] = "Browser runtime used by the seed viewer web page.",
 
         ["Forge 与 NeoForge 安装器支持。"] = "Forge and NeoForge installer support.",
+
+        ["在线音乐搜索与播放服务。"] = "Online music search and playback service.",
     };
 
     private static readonly Dictionary<string, string> EnglishToChinese = BuildReverseMap();
