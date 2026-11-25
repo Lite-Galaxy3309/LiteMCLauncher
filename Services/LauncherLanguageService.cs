@@ -383,6 +383,22 @@ public static class LauncherLanguageService
         ["Forge 与 NeoForge 安装器支持。"] = "Forge and NeoForge installer support.",
 
         ["在线音乐搜索与播放服务。"] = "Online music search and playback service.",
+
+        ["离线模式只影响本地游戏，无法加入需要正版验证的服务器。"] = "Offline mode only affects local play and cannot join servers that require a genuine account.",
+        ["离线用户名"] = "Offline username",
+        ["进入离线模式"] = "Enter offline mode",
+        ["用户名需要是 3-16 位字母、数字或下划线。"] = "The username must be 3-16 letters, numbers or underscores.",
+
+        ["旧版 Beta"] = "Legacy Beta",
+        ["旧版 Alpha"] = "Legacy Alpha",
+        ["未知类型"] = "Unknown type",
+        ["未知发布日期"] = "Unknown release date",
+        ["离线"] = "Offline",
+        ["微软"] = "Microsoft",
+        ["该歌曲没有可用的播放地址，可能需要登录或没有版权。"] = "No playable URL is available for this song. It may require sign-in or have no copyright.",
+        ["没有找到匹配的歌曲。"] = "No matching songs found.",
+        ["网易云接口返回异常"] = "NetEase API returned an unexpected response",
+        ["音乐历史读取失败，可继续搜索。"] = "Failed to load music history; you can still search.",
     };
 
     private static readonly Dictionary<string, string> EnglishToChinese = BuildReverseMap();
@@ -433,6 +449,20 @@ public static class LauncherLanguageService
 
     private static string TranslateDynamic(string text)
     {
+        if (text.StartsWith("播放失败：", StringComparison.Ordinal))
+        {
+            return "Playback failed: " + Translate(text["播放失败：".Length..]);
+        }
+
+        if (text.StartsWith("获取播放地址失败：", StringComparison.Ordinal))
+        {
+            return "Failed to get playback URL: " + Translate(text["获取播放地址失败：".Length..]);
+        }
+
+        if (text.StartsWith("搜索失败：", StringComparison.Ordinal))
+        {
+            return "Search failed: " + Translate(text["搜索失败：".Length..]);
+        }
         if (text.StartsWith("正在检查游戏资源完整性并准备启动 ", StringComparison.Ordinal))
         {
             return "Checking game files and preparing to launch " +
