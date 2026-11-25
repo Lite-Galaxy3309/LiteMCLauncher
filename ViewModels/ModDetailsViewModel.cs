@@ -53,7 +53,8 @@ public sealed class ModDetailsViewModel : ObservableObject
 
     public ModVersionInfo? LatestVersion => Versions.FirstOrDefault();
 
-    public string ProjectTitle => _project?.Title ?? "项目详情";
+    public string ProjectTitle => _project?.Title
+        ?? (LauncherLanguageService.IsEnglish ? "Project details" : "项目详情");
 
     public string ProjectAuthor => _project?.Author ?? string.Empty;
 
@@ -120,22 +121,24 @@ public sealed class ModDetailsViewModel : ObservableObject
     }
 
     public string StatusText => IsLoading
-        ? "正在读取项目信息…"
+        ? (LauncherLanguageService.IsEnglish ? "Loading project information…" : "正在读取项目信息…")
         : _errorMessage is not null
             ? _errorMessage
             : _project is null
-                ? "没有项目数据"
-                : $"{_filteredVersionCount} 个版本";
+                ? (LauncherLanguageService.IsEnglish ? "No project data" : "没有项目数据")
+                : string.Empty;
 
     public string VersionCountText => IsLoading
-        ? "正在读取版本列表…"
-        : $"共 {_filteredVersionCount} 个版本";
+        ? (LauncherLanguageService.IsEnglish ? "Loading version list…" : "正在读取版本列表…")
+        : (LauncherLanguageService.IsEnglish
+            ? $"{_filteredVersionCount} versions"
+            : $"共 {_filteredVersionCount} 个版本");
 
     public bool HasVersions => _filteredVersionCount > 0;
 
     public string EmptyVersionText => _allVersions.Count == 0
-        ? "没有可用的版本。"
-        : "没有符合当前筛选条件的版本。";
+        ? (LauncherLanguageService.IsEnglish ? "No versions available." : "没有可用的版本。")
+        : (LauncherLanguageService.IsEnglish ? "No versions match the current filters." : "没有符合当前筛选条件的版本。");
 
     public async Task LoadAsync(ModSearchResult project)
     {

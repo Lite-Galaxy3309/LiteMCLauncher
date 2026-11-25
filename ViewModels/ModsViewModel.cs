@@ -183,7 +183,9 @@ public sealed class ModsViewModel : ObservableObject
         query = query?.Trim();
         if (string.IsNullOrWhiteSpace(query))
         {
-            _errorMessage = "请输入要搜索的 Mod 或整合包名称。";
+            _errorMessage = LauncherLanguageService.IsEnglish
+                ? "Enter a mod or modpack name to search."
+                : "请输入要搜索的 Mod 或整合包名称。";
             _hasSearched = false;
             Results.Clear();
             RaiseResultProperties();

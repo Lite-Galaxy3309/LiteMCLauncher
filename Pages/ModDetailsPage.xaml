@@ -59,7 +59,7 @@
                         Grid.Column="1"
                         VerticalAlignment="Center"
                         Click="DownloadVersion_Click"
-                        Content="下载并安装" />
+                        Content="{x:Bind DownloadButtonText}" />
                 </Grid>
             </Border>
         </DataTemplate>
