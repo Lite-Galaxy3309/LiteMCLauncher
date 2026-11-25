@@ -1,3 +1,5 @@
+using LiteMCLauncher.Services;
+
 namespace LiteMCLauncher.Models;
 
 public sealed class OnlineSong
@@ -44,4 +46,6 @@ public sealed class OnlineHistoryItem
         : PlayedAt.ToLocalTime().ToString("MM-dd HH:mm");
 
     public string Subtitle => Artists;
+
+    public string DeleteButtonText => LauncherLanguageService.IsEnglish ? "Delete" : "删除";
 }

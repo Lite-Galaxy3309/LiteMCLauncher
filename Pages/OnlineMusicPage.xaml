@@ -37,7 +37,7 @@
                     Grid.Column="1"
                     VerticalAlignment="Center"
                     Click="DeleteHistoryItem_Click"
-                    Content="删除" />
+                    Content="{x:Bind DeleteButtonText}" />
             </Grid>
         </DataTemplate>
     </Page.Resources>
