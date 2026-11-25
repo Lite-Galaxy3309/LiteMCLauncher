@@ -371,6 +371,8 @@ public static class LauncherLanguageService
 
         ["内嵌 ChunkBase 种子地图查询"] = "Embedded ChunkBase seed map search",
         ["内嵌 ChunkBase 种子地图查询。"] = "Embedded ChunkBase seed map search.",
+
+        ["在线种子地图与区块查看服务；种子查看器使用其公开网页。"] = "Online seed map and chunk viewer; the seed viewer uses its public web page.",
     };
 
     private static readonly Dictionary<string, string> EnglishToChinese = BuildReverseMap();

@@ -84,6 +84,7 @@ LiteMCLauncher 的实现离不开以下社区项目、平台和文档：
 | MinecraftForge | Forge 构建元数据与安装器 | https://github.com/MinecraftForge/MinecraftForge |
 | NeoForged / NeoForge | NeoForge 构建元数据与安装器 | https://github.com/neoforged/NeoForge |
 | Modrinth API | Mod 搜索、项目详情与下载信息 | https://docs.modrinth.com |
+| ChunkBase | 在线种子地图与区块查看服务；种子查看器使用其公开网页 | https://www.chunkbase.com/apps/seed-map |
 | Netease_url | 网易云音乐搜索、播放地址与 Cookie 请求头的实现参考（MIT） | https://github.com/Suxiaoqinx/Netease_url |
 | 网易云音乐 | 在线音乐搜索与播放服务 | https://music.163.com |
 | BMCLAPI | BMCLAPI 镜像服务；仅在源设置为 BMCLAPI 时使用 | https://bmclapidoc.bangbang93.com |

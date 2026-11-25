@@ -351,6 +351,28 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Border Width="42" Height="42" Style="{StaticResource IconTileBorderStyle}">
+                            <FontIcon FontSize="20" Glyph="&#xE707;" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="ChunkBase" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="在线种子地图与区块查看服务；种子查看器使用其公开网页。"
+                                TextWrapping="Wrap" />
+                            <HyperlinkButton
+                                Padding="0"
+                                Content="https://www.chunkbase.com/apps/seed-map"
+                                NavigateUri="https://www.chunkbase.com/apps/seed-map" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="42" Height="42" Style="{StaticResource IconTileBorderStyle}">
                             <FontIcon FontSize="20" Glyph="&#xE8D6;" />
                         </Border>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
