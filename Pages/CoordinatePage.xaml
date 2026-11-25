@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="LiteMCLauncher.Pages.CoordinatePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:LiteMCLauncher.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Padding="32,24,32,24" RowSpacing="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button
+                AutomationProperties.Name="Back"
+                Click="Back_Click"
+                Padding="10">
+                <FontIcon FontSize="16" Glyph="&#xE72B;" />
+            </Button>
+            <StackPanel Grid.Column="1" Spacing="4">
+                <TextBlock Style="{StaticResource PageTitleTextBlockStyle}" Text="坐标计算器" />
+                <TextBlock
+                    Style="{StaticResource PageSubtitleTextBlockStyle}"
+                    Text="主世界与下界坐标互转，以及两点直线距离计算。" />
+            </StackPanel>
+        </Grid>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="16">
+                <Border Style="{StaticResource CardBorderStyle}">
+                    <StackPanel Spacing="12">
+                        <TextBlock Style="{StaticResource CardTitleTextBlockStyle}" Text="主世界 → 下界" />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="主世界 X/Z 除以 8，得到下界坐标。"
+                            TextWrapping="Wrap" />
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <NumberBox
+                                x:Name="OverworldX"
+                                Width="170"
+                                Header="主世界 X"
+                                SpinButtonPlacementMode="Compact" />
+                            <NumberBox
+                                x:Name="OverworldZ"
+                                Width="170"
+                                Header="主世界 Z"
+                                SpinButtonPlacementMode="Compact" />
+                            <Button
+                                VerticalAlignment="Bottom"
+                                Click="OverworldToNether_Click"
+                                Content="计算"
+                                Style="{StaticResource AccentButtonStyle}" />
+                        </StackPanel>
+                        <TextBlock
+                            x:Name="OverworldToNetherResult"
+                            Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Text="结果会显示在这里。" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource CardBorderStyle}">
+                    <StackPanel Spacing="12">
+                        <TextBlock Style="{StaticResource CardTitleTextBlockStyle}" Text="下界 → 主世界" />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="下界 X/Z 乘以 8，得到主世界坐标。"
+                            TextWrapping="Wrap" />
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <NumberBox
+                                x:Name="NetherX"
+                                Width="170"
+                                Header="下界 X"
+                                SpinButtonPlacementMode="Compact" />
+                            <NumberBox
+                                x:Name="NetherZ"
+                                Width="170"
+                                Header="下界 Z"
+                                SpinButtonPlacementMode="Compact" />
+                            <Button
+                                VerticalAlignment="Bottom"
+                                Click="NetherToOverworld_Click"
+                                Content="计算"
+                                Style="{StaticResource AccentButtonStyle}" />
+                        </StackPanel>
+                        <TextBlock
+                            x:Name="NetherToOverworldResult"
+                            Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Text="结果会显示在这里。" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource CardBorderStyle}">
+                    <StackPanel Spacing="12">
+                        <TextBlock Style="{StaticResource CardTitleTextBlockStyle}" Text="直线距离" />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="计算两个坐标之间的水平直线距离。"
+                            TextWrapping="Wrap" />
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <NumberBox
+                                x:Name="FromX"
+                                Width="150"
+                                Header="起点 X"
+                                SpinButtonPlacementMode="Compact" />
+                            <NumberBox
+                                x:Name="FromZ"
+                                Width="150"
+                                Header="起点 Z"
+                                SpinButtonPlacementMode="Compact" />
+                            <NumberBox
+                                x:Name="ToX"
+                                Width="150"
+                                Header="终点 X"
+                                SpinButtonPlacementMode="Compact" />
+                            <NumberBox
+                                x:Name="ToZ"
+                                Width="150"
+                                Header="终点 Z"
+                                SpinButtonPlacementMode="Compact" />
+                            <Button
+                                VerticalAlignment="Bottom"
+                                Click="Distance_Click"
+                                Content="计算"
+                                Style="{StaticResource AccentButtonStyle}" />
+                        </StackPanel>
+                        <TextBlock
+                            x:Name="DistanceResult"
+                            Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Text="结果会显示在这里。" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

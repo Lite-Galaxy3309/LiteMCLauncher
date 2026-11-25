@@ -22,7 +22,7 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Button Click="Back_Click" Padding="10">
+            <Button Click="Back_Click" Padding="10" AutomationProperties.Name="Back">
                 <FontIcon FontSize="16" Glyph="&#xE72B;" />
             </Button>
             <StackPanel Grid.Column="1" Spacing="4">

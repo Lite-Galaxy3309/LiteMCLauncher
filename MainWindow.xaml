@@ -83,6 +83,11 @@
                         <FontIcon Glyph="&#xE789;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
+                <NavigationViewItem Content="工具" Tag="tools">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE821;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
                 <NavigationViewItemSeparator />
                 <NavigationViewItem Content="设置" Tag="settings">
                     <NavigationViewItem.Icon>

@@ -334,6 +334,43 @@ public static class LauncherLanguageService
         ["搜索历史："] = "Search history:",
 
         ["搜索并播放网易云音乐"] = "Search and play NetEase Cloud Music",
+
+        ["工具"] = "Tools",
+        ["实用工具"] = "Utilities",
+        ["一些方便 Minecraft 游玩的小工具。"] = "Small utilities for Minecraft.",
+        ["坐标计算器"] = "Coordinate calculator",
+        ["主世界/下界坐标互转与距离计算"] = "Overworld/Nether coordinate conversion and distance calculation",
+        ["种子查看器"] = "Seed viewer",
+        ["内嵌 ChunkBase 种子地图查询（暂未开放）"] = "Embedded ChunkBase seed map (not available yet)",
+        ["主世界 → 下界"] = "Overworld → Nether",
+        ["下界 → 主世界"] = "Nether → Overworld",
+        ["主世界 X"] = "Overworld X",
+        ["主世界 Z"] = "Overworld Z",
+        ["下界 X"] = "Nether X",
+        ["下界 Z"] = "Nether Z",
+        ["主世界与下界坐标互转，以及两点直线距离计算。"] = "Convert between Overworld and Nether coordinates, and calculate straight-line distance.",
+        ["主世界 X/Z 除以 8，得到下界坐标。"] = "Divide Overworld X/Z by 8 to get Nether coordinates.",
+        ["下界 X/Z 乘以 8，得到主世界坐标。"] = "Multiply Nether X/Z by 8 to get Overworld coordinates.",
+        ["直线距离"] = "Straight-line distance",
+        ["计算两个坐标之间的水平直线距离。"] = "Calculate the horizontal straight-line distance between two coordinates.",
+        ["起点 X"] = "Start X",
+        ["起点 Z"] = "Start Z",
+        ["终点 X"] = "End X",
+        ["终点 Z"] = "End Z",
+        ["计算"] = "Calculate",
+        ["结果会显示在这里。"] = "The result will appear here.",
+        ["请输入有效的 X 和 Z 坐标。"] = "Enter valid X and Z coordinates.",
+        ["请输入有效的起点和终点坐标。"] = "Enter valid start and end coordinates.",
+
+        ["登录已过期"] = "Sign-in expired",
+        ["Microsoft 登录已失效，请重新登录该账号。"] = "Microsoft sign-in has expired. Please sign in to this account again.",
+        ["正在登录…"] = "Signing in…",
+        ["正在登录..."] = "Signing in...",
+
+        ["无法启动 Minecraft 进程。"] = "Unable to start the Minecraft process.",
+
+        ["内嵌 ChunkBase 种子地图查询"] = "Embedded ChunkBase seed map search",
+        ["内嵌 ChunkBase 种子地图查询。"] = "Embedded ChunkBase seed map search.",
     };
 
     private static readonly Dictionary<string, string> EnglishToChinese = BuildReverseMap();
@@ -384,6 +421,41 @@ public static class LauncherLanguageService
 
     private static string TranslateDynamic(string text)
     {
+        if (text.StartsWith("正在检查游戏资源完整性并准备启动 ", StringComparison.Ordinal))
+        {
+            return "Checking game files and preparing to launch " +
+                   text["正在检查游戏资源完整性并准备启动 ".Length..];
+        }
+
+        if (text.StartsWith("自动检测：已为 ", StringComparison.Ordinal))
+        {
+            return ("Auto-detect: " + text["自动检测：已为 ".Length..])
+                .Replace(" 选择 Java ", " selected Java ", StringComparison.Ordinal)
+                .Replace("。", ".", StringComparison.Ordinal);
+        }
+
+        if (text.StartsWith("Minecraft ", StringComparison.Ordinal) &&
+            text.EndsWith(" 已启动。", StringComparison.Ordinal))
+        {
+            return text[..^"已启动。".Length] + "launched.";
+        }
+
+        if (text.StartsWith("下界坐标：X ", StringComparison.Ordinal))
+        {
+            return "Nether coordinates: " + text["下界坐标：X ".Length..];
+        }
+
+        if (text.StartsWith("主世界坐标：X ", StringComparison.Ordinal))
+        {
+            return "Overworld coordinates: " + text["主世界坐标：X ".Length..];
+        }
+
+        if (text.StartsWith("直线距离：", StringComparison.Ordinal) &&
+            text.EndsWith(" 格", StringComparison.Ordinal))
+        {
+            return "Distance: " + text["直线距离：".Length..^" 格".Length] + " blocks";
+        }
+
         if (text.Contains(" · 原版", StringComparison.Ordinal))
         {
             text = text.Replace(" · 原版", " · Vanilla", StringComparison.Ordinal);
