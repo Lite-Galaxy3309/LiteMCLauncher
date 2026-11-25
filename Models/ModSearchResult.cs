@@ -1,3 +1,5 @@
+using LiteMCLauncher.Services;
+
 namespace LiteMCLauncher.Models;
 
 /// <summary>
@@ -18,7 +20,9 @@ public sealed record ModSearchResult(
 {
     public bool IsModpack => string.Equals(ProjectType, "modpack", StringComparison.OrdinalIgnoreCase);
 
-    public string ProjectTypeDisplay => IsModpack ? "整合包" : "Mod";
+    public string ProjectTypeDisplay => IsModpack
+        ? (LauncherLanguageService.IsEnglish ? "Modpack" : "整合包")
+        : "Mod";
 
     public string DownloadsDisplay => Downloads switch
     {
@@ -28,7 +32,9 @@ public sealed record ModSearchResult(
         _ => Downloads.ToString(),
     };
 
-    public string ActionText => IsModpack ? "一键安装" : "安装";
+    public string ActionText => IsModpack
+        ? (LauncherLanguageService.IsEnglish ? "Install modpack" : "一键安装")
+        : (LauncherLanguageService.IsEnglish ? "Install" : "安装");
 
     public override string ToString() => $"{Title} · {ProjectTypeDisplay} · {Source}";
 }

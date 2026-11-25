@@ -95,14 +95,6 @@ public sealed partial class ModsPage : Page
         }
     }
 
-    private void OpenModDetails_Click(object sender, RoutedEventArgs e)
-    {
-        if (sender is Button { DataContext: ModSearchResult project })
-        {
-            Frame.Navigate(typeof(ModDetailsPage), project);
-        }
-    }
-
     private async void InstallMod_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not Button { DataContext: ModSearchResult project })

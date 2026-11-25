@@ -213,10 +213,6 @@
                                             Style="{StaticResource CaptionTextBlockStyle}"
                                             Text="{x:Bind DownloadsDisplay}" />
                                         <Button
-                                            Click="OpenModDetails_Click"
-                                            Content="详情"
-                                            HorizontalAlignment="Right" />
-                                        <Button
                                             Click="InstallMod_Click"
                                             Content="{x:Bind ActionText}"
                                             HorizontalAlignment="Right" />

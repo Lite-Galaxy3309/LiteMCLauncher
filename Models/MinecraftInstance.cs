@@ -1,3 +1,5 @@
+using LiteMCLauncher.Services;
+
 namespace LiteMCLauncher.Models;
 
 /// <summary>
@@ -25,16 +27,27 @@ public sealed record MinecraftInstance(
         _ => "ms-appx:///Assets/Loaders/vanilla.png",
     };
 
-    public string LoaderDisplay => string.IsNullOrWhiteSpace(Loader) ? "原版" : Loader;
+    public string LoaderDisplay => string.IsNullOrWhiteSpace(Loader)
+        ? (LauncherLanguageService.IsEnglish ? "Vanilla" : "原版")
+        : Loader;
 
-    public string VersionTypeDisplay => VersionType switch
-    {
-        "release" => "正式版",
-        "snapshot" => "快照",
-        "old_beta" => "旧版 Beta",
-        "old_alpha" => "旧版 Alpha",
-        _ => "未知类型",
-    };
+    public string VersionTypeDisplay => LauncherLanguageService.IsEnglish
+        ? VersionType switch
+        {
+            "release" => "Release",
+            "snapshot" => "Snapshot",
+            "old_beta" => "Legacy Beta",
+            "old_alpha" => "Legacy Alpha",
+            _ => "Unknown type",
+        }
+        : VersionType switch
+        {
+            "release" => "正式版",
+            "snapshot" => "快照",
+            "old_beta" => "旧版 Beta",
+            "old_alpha" => "旧版 Alpha",
+            _ => "未知类型",
+        };
 
     public string Summary => $"Minecraft {GameVersion} · {LoaderDisplay}";
 
@@ -51,10 +64,22 @@ public sealed record MinecraftInstance(
             if (days <= 0)
             {
                 var elapsed = now - local;
-                return elapsed.TotalMinutes < 2 ? "刚刚" : $"今天 {local:HH:mm}";
+                if (elapsed.TotalMinutes < 2)
+                {
+                    return LauncherLanguageService.IsEnglish ? "Just now" : "刚刚";
+                }
+
+                return LauncherLanguageService.IsEnglish ? $"Today {local:HH:mm}" : $"今天 {local:HH:mm}";
             }
 
-            return days == 1 ? $"昨天 {local:HH:mm}" : days < 7 ? $"{days} 天前" : local.ToString("yyyy-MM-dd");
+            if (days == 1)
+            {
+                return LauncherLanguageService.IsEnglish ? $"Yesterday {local:HH:mm}" : $"昨天 {local:HH:mm}";
+            }
+
+            return days < 7
+                ? (LauncherLanguageService.IsEnglish ? $"{days} days ago" : $"{days} 天前")
+                : local.ToString("yyyy-MM-dd");
         }
     }
 }

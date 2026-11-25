@@ -399,6 +399,45 @@ public static class LauncherLanguageService
         ["没有找到匹配的歌曲。"] = "No matching songs found.",
         ["网易云接口返回异常"] = "NetEase API returned an unexpected response",
         ["音乐历史读取失败，可继续搜索。"] = "Failed to load music history; you can still search.",
+
+        ["关"] = "Off",
+        ["开"] = "On",
+        ["全部分类"] = "All categories",
+        ["按关键词搜索 Modrinth，可切换分类与 Mod/整合包类型。"] = "Search Modrinth by keyword and switch categories or mod/modpack types.",
+        ["实例自动 Java"] = "Instance auto Java",
+        ["未检测到实例可用的 Java 运行时"] = "No Java runtime available for this instance",
+        ["实例指定的 Java 路径无效"] = "The Java path specified for this instance is invalid",
+        ["已使用设置中的 Java 路径"] = "Using the Java path from Settings",
+        ["设置中的 Java 路径无效"] = "The Java path in Settings is invalid",
+        ["未检测到 Java 运行时"] = "No Java runtime detected",
+        ["Java 运行时检测失败"] = "Java runtime detection failed",
+        ["正在检测 Java 运行时…"] = "Detecting Java runtime…",
+        ["正在检测 Java 运行时..."] = "Detecting Java runtime...",
+        ["正在获取设备代码…"] = "Getting device code…",
+        ["打开 Microsoft 登录页面"] = "Open Microsoft sign-in page",
+        ["正在向 Microsoft 请求设备代码，请稍候…"] = "Requesting a device code from Microsoft…",
+        ["1. 点击下方按钮打开 Microsoft 登录页面。"] = "1. Click the button below to open the Microsoft sign-in page.",
+        ["2. 在页面中输入下面的设备代码并完成登录。"] = "2. Enter the device code below and complete sign-in.",
+        ["登录成功"] = "Sign-in successful",
+        ["登录失败"] = "Sign-in failed",
+        ["无法启动"] = "Unable to launch",
+
+        ["登录状态不可用"] = "Sign-in unavailable",
+        ["请先重新登录账号。"] = "Please sign in to the account again.",
+        ["缺少 Java 运行时"] = "Java runtime missing",
+        ["Java 版本不匹配"] = "Java version mismatch",
+        ["当前 Java 版本与游戏不匹配。"] = "The current Java version does not match the game.",
+        ["当前 Java："] = "Current Java: ",
+        ["未知版本"] = "Unknown version",
+        ["建议安装 Java"] = "Recommended Java",
+        ["继续启动"] = "Continue launch",
+        ["去安装 Java"] = "Install Java",
+
+        ["正在搜索…"] = "Searching…",
+        ["正在搜索..."] = "Searching...",
+        ["正在搜索 Modrinth..."] = "Searching Modrinth...",
+        ["正在搜索 Modrinth…"] = "Searching Modrinth…",
+        ["搜索失败"] = "Search failed",
     };
 
     private static readonly Dictionary<string, string> EnglishToChinese = BuildReverseMap();
@@ -447,8 +486,40 @@ public static class LauncherLanguageService
         return EnglishToChinese.TryGetValue(text, out var chinese) ? chinese : text;
     }
 
+    private static string TextTail(string text, string prefix)
+    {
+        return text[prefix.Length..];
+    }
+
     private static string TranslateDynamic(string text)
     {
+        if (text.StartsWith("正在搜索", StringComparison.Ordinal))
+        {
+            var rest = text["正在搜索".Length..].TrimStart(':', '：');
+            return "Searching" + (string.IsNullOrWhiteSpace(rest) ? "…" : " " + rest);
+        }
+        if (text.StartsWith("已登录为 ", StringComparison.Ordinal))
+        {
+            return "Signed in as " + TextTail(text, "已登录为 ");
+        }
+
+        if (text.StartsWith("实例 Java：", StringComparison.Ordinal))
+        {
+            return "Instance Java: " + TextTail(text, "实例 Java：");
+        }
+
+        if (text.StartsWith("实例自动 Java ", StringComparison.Ordinal))
+        {
+            return "Instance auto Java " + TextTail(text, "实例自动 Java ");
+        }
+
+        if (text.StartsWith("设备代码已复制到剪贴板，有效期至 ", StringComparison.Ordinal))
+        {
+            return text
+                .Replace("设备代码已复制到剪贴板，有效期至 ", "Device code copied to clipboard. Valid until ", StringComparison.Ordinal)
+                .Replace("登录地址：", "Sign-in URL: ", StringComparison.Ordinal)
+                .Replace("在浏览器中完成登录后，此窗口会自动关闭。", "This window closes automatically after you sign in in the browser.", StringComparison.Ordinal);
+        }
         if (text.StartsWith("播放失败：", StringComparison.Ordinal))
         {
             return "Playback failed: " + Translate(text["播放失败：".Length..]);
@@ -634,7 +705,8 @@ public static class LauncherLanguageService
 
         if (text.EndsWith(" 个结果", StringComparison.Ordinal))
         {
-            return text[..^" 个结果".Length] + " results";
+            var count = text[..^" 个结果".Length].Replace("共 ", string.Empty, StringComparison.Ordinal);
+            return count + " results";
         }
 
         if (text.EndsWith(" 已暂停。", StringComparison.Ordinal))

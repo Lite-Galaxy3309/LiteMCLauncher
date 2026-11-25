@@ -1,3 +1,5 @@
+using LiteMCLauncher.Services;
+
 namespace LiteMCLauncher.Models;
 
 /// <summary>
@@ -9,20 +11,31 @@ public sealed record MinecraftVersionInfo(
     DateTimeOffset ReleaseTime,
     bool IsInstalled)
 {
-    public string TypeDisplay => Type switch
-    {
-        "release" => "正式版",
-        "snapshot" => "快照",
-        "old_beta" => "旧版 Beta",
-        "old_alpha" => "旧版 Alpha",
-        _ => "未知类型",
-    };
+    public string TypeDisplay => LauncherLanguageService.IsEnglish
+        ? Type switch
+        {
+            "release" => "Release",
+            "snapshot" => "Snapshot",
+            "old_beta" => "Legacy Beta",
+            "old_alpha" => "Legacy Alpha",
+            _ => "Unknown type",
+        }
+        : Type switch
+        {
+            "release" => "正式版",
+            "snapshot" => "快照",
+            "old_beta" => "旧版 Beta",
+            "old_alpha" => "旧版 Alpha",
+            _ => "未知类型",
+        };
 
     public string ReleaseDateDisplay => ReleaseTime == default
-        ? "未知发布日期"
+        ? (LauncherLanguageService.IsEnglish ? "Unknown release date" : "未知发布日期")
         : ReleaseTime.ToLocalTime().ToString("yyyy-MM-dd");
 
-    public string InstallButtonText => IsInstalled ? "重新安装" : "安装";
+    public string InstallButtonText => IsInstalled
+        ? (LauncherLanguageService.IsEnglish ? "Reinstall" : "重新安装")
+        : (LauncherLanguageService.IsEnglish ? "Install" : "安装");
 
     public string IconPath { get; set; } = "ms-appx:///Assets/Loaders/vanilla.png";
 

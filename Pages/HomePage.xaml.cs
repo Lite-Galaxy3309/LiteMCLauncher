@@ -212,7 +212,9 @@ public sealed partial class HomePage : Page
             Title = "移除账号",
             Content = new TextBlock
             {
-                Text = $"确定从启动器中移除账号“{account.Username}”吗？\n这不会删除游戏存档。",
+                Text = LauncherLanguageService.IsEnglish
+                    ? $"Remove account \"{account.Username}\" from the launcher?\nGame saves will not be deleted."
+                    : $"确定从启动器中移除账号“{account.Username}”吗？\n这不会删除游戏存档。",
                 TextWrapping = TextWrapping.Wrap,
             },
             PrimaryButtonText = "移除",

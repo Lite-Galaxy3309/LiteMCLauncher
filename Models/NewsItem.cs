@@ -1,3 +1,5 @@
+using LiteMCLauncher.Services;
+
 namespace LiteMCLauncher.Models;
 
 public sealed class NewsItem
@@ -23,6 +25,24 @@ public sealed class NewsItem
     public string DateDisplay => Date == default
         ? string.Empty
         : Date.ToLocalTime().ToString("yyyy-MM-dd");
+
+    public string CategoryDisplay => LauncherLanguageService.IsEnglish
+        ? Category switch
+        {
+            "快照更新" => "Snapshot update",
+            "Java 版更新" => "Java Edition update",
+            _ => LauncherLanguageService.Translate(Category),
+        }
+        : Category;
+
+    public string SourceDisplay => LauncherLanguageService.IsEnglish
+        ? Source switch
+        {
+            "Mojang 新闻" => "Mojang news",
+            "Mojang 更新" => "Mojang update",
+            _ => LauncherLanguageService.Translate(Source),
+        }
+        : Source;
 
     public Uri? LinkUri => Uri.TryCreate(Link, UriKind.Absolute, out var uri) ? uri : null;
 

@@ -28,7 +28,7 @@ public sealed partial class NewsDetailPage : Page
 
         _item = item;
         HeaderTitle.Text = item.Title;
-        HeaderMeta.Text = $"{item.Source} · {item.Category} · {item.DateDisplay}";
+        HeaderMeta.Text = $"{item.SourceDisplay} · {item.CategoryDisplay} · {item.DateDisplay}";
 
         LoadingRing.IsActive = true;
         ArticlePanel.Children.Clear();

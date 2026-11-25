@@ -74,13 +74,13 @@
                                             <TextBlock
                                                 Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
                                                 Style="{StaticResource CaptionTextBlockStyle}"
-                                                Text="{x:Bind Source}" />
+                                                Text="{x:Bind SourceDisplay}" />
                                         </Border>
                                         <TextBlock
                                             VerticalAlignment="Center"
                                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                             Style="{StaticResource CaptionTextBlockStyle}"
-                                            Text="{x:Bind Category}" />
+                                            Text="{x:Bind CategoryDisplay}" />
                                         <TextBlock
                                             VerticalAlignment="Center"
                                             Foreground="{ThemeResource TextFillColorTertiaryBrush}"
@@ -100,10 +100,6 @@
                                         Text="{x:Bind Summary}"
                                         TextTrimming="CharacterEllipsis"
                                         TextWrapping="Wrap" />
-                                    <Button
-                                        HorizontalAlignment="Left"
-                                        Click="ReadMore_Click"
-                                        Content="查看全文" />
                                 </StackPanel>
                             </Grid>
                         </Border>

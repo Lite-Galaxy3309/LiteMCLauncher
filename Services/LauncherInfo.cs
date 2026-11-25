@@ -7,7 +7,7 @@ public static class LauncherInfo
 {
     public const string Name = "LiteMCLauncher";
 
-    public const string Version = "0.6.0";
+    public const string Version = "0.6.1";
 
     public const string BuildDate = "2026-11-24";
 

@@ -141,8 +141,8 @@ public sealed class ModsViewModel : ObservableObject
     }
 
     public string EmptyStateDescription => _errorMessage ?? (_hasSearched
-        ? "尝试更换关键词、分类或内容类型。"
-        : "按关键词搜索 Modrinth，可切换分类与 Mod/整合包类型。");
+        ? (LauncherLanguageService.IsEnglish ? "Try another keyword, category or content type." : "尝试更换关键词、分类或内容类型。")
+        : (LauncherLanguageService.IsEnglish ? "Search Modrinth by keyword and switch categories or mod/modpack types." : "按关键词搜索 Modrinth，可切换分类与 Mod/整合包类型。"));
 
     public async Task InitializeAsync()
     {

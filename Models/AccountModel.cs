@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Serialization;
+using LiteMCLauncher.Services;
 
 namespace LiteMCLauncher.Models;
 
@@ -45,7 +46,9 @@ public sealed class AccountModel
     public bool IsOffline => Type == AccountType.Offline;
 
     [JsonIgnore]
-    public string AccountTypeDisplay => IsOffline ? "离线" : "微软";
+    public string AccountTypeDisplay => IsOffline
+        ? (LauncherLanguageService.IsEnglish ? "Offline" : "离线")
+        : (LauncherLanguageService.IsEnglish ? "Microsoft" : "微软");
 
     [JsonIgnore]
     public string DisplayName => Username;
