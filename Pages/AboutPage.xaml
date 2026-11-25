@@ -41,7 +41,7 @@
                         <StackPanel Orientation="Horizontal" Spacing="12">
                             <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="LiteMCLauncher" />
                             <Border Style="{StaticResource PillBorderStyle}">
-                                <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="v0.6.1" />
+                                <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="v0.6.2" />
                             </Border>
                         </StackPanel>
                         <TextBlock
@@ -65,7 +65,7 @@
                         <TextBlock
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             Text="当前版本" />
-                        <TextBlock Grid.Column="1" Text="0.6.1" />
+                        <TextBlock Grid.Column="1" Text="0.6.2" />
                     </Grid>
 
                     <Grid ColumnSpacing="16">
@@ -376,11 +376,11 @@
                             <FontIcon FontSize="20" Glyph="&#xE707;" />
                         </Border>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="ChunkBase" />
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="ChunkBase（v0.6.0–v0.6.1）" />
                             <TextBlock
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Style="{StaticResource CaptionTextBlockStyle}"
-                                Text="在线种子地图与区块查看服务；种子查看器使用其公开网页。"
+                                Text="种子查看器在 v0.6.0–v0.6.1 使用其公开网页；v0.6.2 起移除。"
                                 TextWrapping="Wrap" />
                             <HyperlinkButton
                                 Padding="0"
@@ -548,6 +548,28 @@
                                 Padding="0"
                                 Content="https://developer.microsoft.com/microsoft-edge/webview2/"
                                 NavigateUri="https://developer.microsoft.com/microsoft-edge/webview2/" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="42" Height="42" Style="{StaticResource IconTileBorderStyle}">
+                            <FontIcon FontSize="20" Glyph="&#xE8B7;" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="RZeroF1.Minecraft.SeedMap / Cubiomes" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="种子结构候选位置与生物群系计算。"
+                                TextWrapping="Wrap" />
+                            <HyperlinkButton
+                                Padding="0"
+                                Content="https://github.com/RZeroF1/Minecraft-SeedUniverse"
+                                NavigateUri="https://github.com/RZeroF1/Minecraft-SeedUniverse" />
                         </StackPanel>
                     </Grid>
 

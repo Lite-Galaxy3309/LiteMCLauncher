@@ -447,6 +447,41 @@ public static class LauncherLanguageService
         ["项目详情"] = "Project details",
         ["通用"] = "Universal",
         ["没有可用的版本"] = "No versions available",
+
+        ["种子结构查找器"] = "Seed structure finder",
+        ["根据种子、版本和结构类型搜索附近的结构位置。"] = "Search nearby structure positions by seed, version and structure type.",
+        ["种子"] = "Seed",
+        ["数字或字符串种子"] = "Numeric or text seed",
+        ["MC 版本"] = "MC version",
+        ["结构类型"] = "Structure type",
+        ["村庄"] = "Village",
+        ["要塞"] = "Stronghold",
+        ["海底神殿"] = "Ocean Monument",
+        ["沙漠神殿"] = "Desert Pyramid",
+        ["远古城市"] = "Ancient City",
+        ["林地府邸"] = "Woodland Mansion",
+        ["搜索半径（区块）"] = "Search radius (chunks)",
+        ["开始搜索"] = "Start search",
+        ["输入种子后开始搜索。"] = "Enter a seed to start searching.",
+        ["按种子搜索村庄、要塞、海底神殿等结构"] = "Search villages, strongholds, monuments and more by seed",
+
+        ["种子结构候选位置与生物群系计算。"] = "Seed structure candidate positions and biome computation.",
+
+        ["丛林神庙"] = "Jungle Temple",
+        ["沼泽小屋"] = "Witch Hut",
+        ["雪屋"] = "Igloo",
+        ["海底废墟"] = "Ocean Ruins",
+        ["沉船"] = "Shipwreck",
+        ["掠夺者前哨站"] = "Pillager Outpost",
+        ["废弃传送门"] = "Ruined Portal",
+        ["埋藏的宝藏"] = "Buried Treasure",
+        ["废弃矿井"] = "Mineshaft",
+        ["古迹废墟"] = "Trail Ruins",
+        ["试炼密室"] = "Trial Chambers",
+
+        ["结构搜索结果为候选位置，不保证 100% 准确。"] = "Structure results are candidate positions and are not guaranteed to be 100% accurate.",
+
+        ["种子查看器在 v0.6.0–v0.6.1 使用其公开网页；v0.6.2 起移除。"] = "The seed viewer used its public web page in v0.6.0–v0.6.1 and was removed in v0.6.2.",
     };
 
     private static readonly Dictionary<string, string> EnglishToChinese = BuildReverseMap();

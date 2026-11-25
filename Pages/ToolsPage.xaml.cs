@@ -15,8 +15,8 @@ public sealed partial class ToolsPage : Page
         Frame.Navigate(typeof(CoordinatePage));
     }
 
-    private void ChunkbaseTool_Click(object sender, RoutedEventArgs e)
+    private void SeedFinderTool_Click(object sender, RoutedEventArgs e)
     {
-        Frame.Navigate(typeof(ChunkbasePage));
+        Frame.Navigate(typeof(SeedFinderPage));
     }
 }

@@ -37,7 +37,6 @@ public sealed partial class MainWindow : Window
     };
 
     private bool _isSyncingSelection;
-    private long _lastIncrementalLanguageTick;
 
     public MainWindow()
     {
@@ -240,22 +239,6 @@ public sealed partial class MainWindow : Window
             if (NavFrame.Content is FrameworkElement page)
             {
                 page.Loaded += (_, _) => LauncherLanguageService.ApplyNew(page);
-                page.LayoutUpdated += (_, _) =>
-                {
-                    if (!LauncherLanguageService.IsEnglish)
-                    {
-                        return;
-                    }
-
-                    var now = Environment.TickCount64;
-                    if (now - _lastIncrementalLanguageTick < 250)
-                    {
-                        return;
-                    }
-
-                    _lastIncrementalLanguageTick = now;
-                    LauncherLanguageService.ApplyNew(page);
-                };
                 _ = ApplyPageLanguageAsync(page);
             }
         }
