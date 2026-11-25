@@ -8,6 +8,17 @@ public static class ContentDialogLocalization
     public static async Task<ContentDialogResult> ShowLocalizedAsync(this ContentDialog dialog)
     {
         Localize(dialog);
+
+        if (dialog.Content is FrameworkElement content)
+        {
+            dialog.Opened += (_, _) =>
+            {
+                LauncherLanguageService.ApplyNew(content);
+                content.LayoutUpdated += (_, _) =>
+                    LauncherLanguageService.ApplyNew(content);
+            };
+        }
+
         return await dialog.ShowAsync();
     }
 

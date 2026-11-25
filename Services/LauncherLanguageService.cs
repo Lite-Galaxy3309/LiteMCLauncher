@@ -452,6 +452,7 @@ public static class LauncherLanguageService
     private static readonly Dictionary<string, string> EnglishToChinese = BuildReverseMap();
     private static readonly ConditionalWeakTable<TextBlock, object> HookedTextBlocks = new();
     private static readonly ConditionalWeakTable<ComboBox, object> HookedComboBoxes = new();
+    private static ConditionalWeakTable<DependencyObject, object> ProcessedElements = new();
 
     private static Dictionary<string, string> BuildReverseMap()
     {
@@ -473,6 +474,9 @@ public static class LauncherLanguageService
         CurrentLanguage = string.Equals(language, English, StringComparison.OrdinalIgnoreCase)
             ? English
             : Chinese;
+
+        // A language switch must re-translate controls that were already processed.
+        ProcessedElements = new ConditionalWeakTable<DependencyObject, object>();
     }
 
     public static string Translate(string text)
@@ -765,6 +769,12 @@ public static class LauncherLanguageService
 
         foreach (var element in elements)
         {
+            if (ProcessedElements.TryGetValue(element, out _))
+            {
+                continue;
+            }
+
+            ProcessedElements.Add(element, new object());
             try
             {
                 TranslateElement(element);
@@ -774,6 +784,16 @@ public static class LauncherLanguageService
                 // One unsupported template child must not block the rest.
             }
         }
+    }
+
+    /// <summary>
+    /// Translates only elements added since the previous pass. Intended for
+    /// LayoutUpdated observers so virtualized/recycled templates are covered
+    /// without rewriting the whole tree on every layout.
+    /// </summary>
+    public static void ApplyNew(DependencyObject? root)
+    {
+        Apply(root);
     }
 
     private static void Collect(DependencyObject element, List<DependencyObject> elements)
