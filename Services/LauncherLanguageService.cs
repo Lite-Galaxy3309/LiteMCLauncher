@@ -438,6 +438,15 @@ public static class LauncherLanguageService
         ["正在搜索 Modrinth..."] = "Searching Modrinth...",
         ["正在搜索 Modrinth…"] = "Searching Modrinth…",
         ["搜索失败"] = "Search failed",
+
+        ["正在读取项目信息…"] = "Loading project information…",
+        ["正在读取版本列表…"] = "Loading version list…",
+        ["没有项目数据"] = "No project data",
+        ["没有可用的版本。"] = "No versions available.",
+        ["没有符合当前筛选条件的版本。"] = "No versions match the current filters.",
+        ["项目详情"] = "Project details",
+        ["通用"] = "Universal",
+        ["没有可用的版本"] = "No versions available",
     };
 
     private static readonly Dictionary<string, string> EnglishToChinese = BuildReverseMap();
@@ -701,6 +710,22 @@ public static class LauncherLanguageService
             text.EndsWith(" 个实例", StringComparison.Ordinal))
         {
             return text["共 ".Length..^" 个实例".Length] + " instances";
+        }
+
+        if (text.StartsWith("共 ", StringComparison.Ordinal) &&
+            text.EndsWith(" 个版本", StringComparison.Ordinal))
+        {
+            return text["共 ".Length..^" 个版本".Length] + " versions";
+        }
+
+        if (text.EndsWith(" 个版本", StringComparison.Ordinal))
+        {
+            return text[..^" 个版本".Length] + " versions";
+        }
+
+        if (text.StartsWith("正在准备下载 ", StringComparison.Ordinal))
+        {
+            return "Preparing to download " + TextTail(text, "正在准备下载 ");
         }
 
         if (text.EndsWith(" 个结果", StringComparison.Ordinal))
