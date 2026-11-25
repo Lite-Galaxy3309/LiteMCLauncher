@@ -76,6 +76,7 @@ LiteMCLauncher 的实现离不开以下社区项目、平台和文档：
 | 项目 | 用途 | 地址 |
 |---|---|---|
 | CmlLib.Core | Minecraft 版本安装、启动参数与进程构建 | https://github.com/CmlLib/CmlLib.Core |
+| CmlLib.Core.Installer.Forge | Forge/NeoForge 安装器支持 | https://github.com/CmlLib/CmlLib.Core.Installer.Forge |
 | CmlLib.Core.Auth.Microsoft | Microsoft / Xbox / Minecraft 登录链路 | https://github.com/CmlLib/CmlLib.Core.Auth.Microsoft |
 | XboxAuthNet | Xbox Live 认证辅助库 | https://github.com/CmlLib/XboxAuthNet |
 | Windows App SDK / WinUI 3 | Windows 桌面 UI 与窗口能力 | https://github.com/microsoft/WindowsAppSDK |
@@ -85,6 +86,13 @@ LiteMCLauncher 的实现离不开以下社区项目、平台和文档：
 | NeoForged / NeoForge | NeoForge 构建元数据与安装器 | https://github.com/neoforged/NeoForge |
 | Modrinth API | Mod 搜索、项目详情与下载信息 | https://docs.modrinth.com |
 | ChunkBase | 在线种子地图与区块查看服务；种子查看器使用其公开网页 | https://www.chunkbase.com/apps/seed-map |
+| Eclipse Adoptium / Temurin | Java 运行时下载与安装包 | https://adoptium.net |
+| 清华 TUNA 镜像 | Java 下载镜像源 | https://mirrors.tuna.tsinghua.edu.cn |
+| CurseForge | Mod 与整合包搜索、下载 API | https://www.curseforge.com |
+| Crafatar | 玩家头像渲染服务 | https://crafatar.com |
+| mc-heads.net | 玩家头像备用服务 | https://mc-heads.net |
+| Minotar | 玩家头像备用服务 | https://minotar.net |
+| Microsoft Edge WebView2 | 种子查看器内嵌网页运行时 | https://developer.microsoft.com/microsoft-edge/webview2/ |
 | Netease_url | 网易云音乐搜索、播放地址与 Cookie 请求头的实现参考（MIT） | https://github.com/Suxiaoqinx/Netease_url |
 | 网易云音乐 | 在线音乐搜索与播放服务 | https://music.163.com |
 | BMCLAPI | BMCLAPI 镜像服务；仅在源设置为 BMCLAPI 时使用 | https://bmclapidoc.bangbang93.com |

@@ -167,6 +167,28 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Border Width="42" Height="42" Style="{StaticResource IconTileBorderStyle}">
+                            <FontIcon FontSize="20" Glyph="&#xE7B8;" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="CmlLib.Core.Installer.Forge" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Forge 与 NeoForge 安装器支持。"
+                                TextWrapping="Wrap" />
+                            <HyperlinkButton
+                                Padding="0"
+                                Content="GitHub · CmlLib/CmlLib.Core.Installer.Forge"
+                                NavigateUri="https://github.com/CmlLib/CmlLib.Core.Installer.Forge" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="42" Height="42" Style="{StaticResource IconTileBorderStyle}">
                             <FontIcon FontSize="20" Glyph="&#xE72E;" />
                         </Border>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
@@ -386,6 +408,124 @@
                                 Padding="0"
                                 Content="GitHub · Suxiaoqinx/Netease_url"
                                 NavigateUri="https://github.com/Suxiaoqinx/Netease_url" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="42" Height="42" Style="{StaticResource IconTileBorderStyle}">
+                            <FontIcon FontSize="20" Glyph="&#xE8D6;" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Eclipse Adoptium / Temurin" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Java 运行时下载与安装包。"
+                                TextWrapping="Wrap" />
+                            <HyperlinkButton
+                                Padding="0"
+                                Content="https://adoptium.net"
+                                NavigateUri="https://adoptium.net" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="42" Height="42" Style="{StaticResource IconTileBorderStyle}">
+                            <FontIcon FontSize="20" Glyph="&#xE753;" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="清华 TUNA 镜像" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Java 下载镜像源。"
+                                TextWrapping="Wrap" />
+                            <HyperlinkButton
+                                Padding="0"
+                                Content="https://mirrors.tuna.tsinghua.edu.cn"
+                                NavigateUri="https://mirrors.tuna.tsinghua.edu.cn" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="42" Height="42" Style="{StaticResource IconTileBorderStyle}">
+                            <FontIcon FontSize="20" Glyph="&#xE8F1;" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="CurseForge" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Mod 与整合包搜索、下载 API。"
+                                TextWrapping="Wrap" />
+                            <HyperlinkButton
+                                Padding="0"
+                                Content="https://www.curseforge.com"
+                                NavigateUri="https://www.curseforge.com" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="42" Height="42" Style="{StaticResource IconTileBorderStyle}">
+                            <FontIcon FontSize="20" Glyph="&#xE77B;" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Crafatar / mc-heads.net / Minotar" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="玩家头像渲染与备用头像服务。"
+                                TextWrapping="Wrap" />
+                            <HyperlinkButton
+                                Padding="0"
+                                Content="https://crafatar.com"
+                                NavigateUri="https://crafatar.com" />
+                            <HyperlinkButton
+                                Padding="0"
+                                Content="https://mc-heads.net"
+                                NavigateUri="https://mc-heads.net" />
+                            <HyperlinkButton
+                                Padding="0"
+                                Content="https://minotar.net"
+                                NavigateUri="https://minotar.net" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="42" Height="42" Style="{StaticResource IconTileBorderStyle}">
+                            <FontIcon FontSize="20" Glyph="&#xE774;" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Microsoft Edge WebView2" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="种子查看器内嵌网页所使用的浏览器运行时。"
+                                TextWrapping="Wrap" />
+                            <HyperlinkButton
+                                Padding="0"
+                                Content="https://developer.microsoft.com/microsoft-edge/webview2/"
+                                NavigateUri="https://developer.microsoft.com/microsoft-edge/webview2/" />
                         </StackPanel>
                     </Grid>
 

@@ -373,6 +373,14 @@ public static class LauncherLanguageService
         ["内嵌 ChunkBase 种子地图查询。"] = "Embedded ChunkBase seed map search.",
 
         ["在线种子地图与区块查看服务；种子查看器使用其公开网页。"] = "Online seed map and chunk viewer; the seed viewer uses its public web page.",
+
+        ["Java 运行时下载与安装包。"] = "Java runtime downloads and installers.",
+        ["Java 下载镜像源。"] = "Java download mirror.",
+        ["Mod 与整合包搜索、下载 API。"] = "Mod and modpack search and download API.",
+        ["玩家头像渲染与备用头像服务。"] = "Player avatar rendering and fallback avatar services.",
+        ["种子查看器内嵌网页所使用的浏览器运行时。"] = "Browser runtime used by the seed viewer web page.",
+
+        ["Forge 与 NeoForge 安装器支持。"] = "Forge and NeoForge installer support.",
     };
 
     private static readonly Dictionary<string, string> EnglishToChinese = BuildReverseMap();
