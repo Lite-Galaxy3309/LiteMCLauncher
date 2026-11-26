@@ -91,12 +91,14 @@
 
         <Border Grid.Row="3" Padding="12" Style="{StaticResource CardBorderStyle}">
             <ScrollViewer
-                Height="72"
-                Padding="0,0,0,18"
-                HorizontalScrollBarVisibility="Hidden"
+                x:Name="LegendScroller"
+                Height="52"
+                Padding="0"
+                HorizontalScrollBarVisibility="Auto"
                 HorizontalScrollMode="Enabled"
+                VerticalContentAlignment="Center"
                 VerticalScrollBarVisibility="Disabled">
-                <ItemsControl ItemsSource="{x:Bind Legend}" VerticalAlignment="Top">
+                <ItemsControl ItemsSource="{x:Bind Legend}" VerticalAlignment="Center">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Orientation="Horizontal" Spacing="18" />
