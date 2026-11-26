@@ -20,7 +20,7 @@ public static class BiomeMapService
         return await Task.Run(() =>
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var radiusBlocks = Math.Clamp(radiusChunks, 1, 30000) * 16;
+            var radiusBlocks = Math.Clamp(radiusChunks, 1, 1_875_000) * 16;
             var step = radiusBlocks <= 512 ? 1
                 : radiusBlocks <= 2048 ? 4
                 : radiusBlocks <= 8192 ? 16

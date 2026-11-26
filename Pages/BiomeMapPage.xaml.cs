@@ -121,7 +121,7 @@ public sealed partial class BiomeMapPage : Page, INotifyPropertyChanged
             var result = await BiomeMapService.GenerateAsync(
                 seed,
                 version,
-                (int)Math.Clamp(RadiusBox.Value, 1, 30000));
+                (int)Math.Clamp(RadiusBox.Value, 1, 1_875_000));
             _currentSeed = seed;
             _currentVersion = version;
             ApplyResult(result, fit: true);
@@ -181,7 +181,14 @@ public sealed partial class BiomeMapPage : Page, INotifyPropertyChanged
         var height = Math.Max(1, MapView.ActualHeight);
         var extent = _mapExtent;
         var maxResolution = Math.Min(extent.Width / width, extent.Height / height);
-        MapView.Map.Navigator.OverridePanBounds = extent;
+        var halfVisibleWidth = width * maxResolution / 2;
+        var halfVisibleHeight = height * maxResolution / 2;
+        var panBounds = new MRect(
+            extent.Min.X + halfVisibleWidth,
+            extent.Min.Y + halfVisibleHeight,
+            extent.Max.X - halfVisibleWidth,
+            extent.Max.Y - halfVisibleHeight);
+        MapView.Map.Navigator.OverridePanBounds = panBounds;
         MapView.Map.Navigator.CenterOnAndZoomTo(new MPoint(0, 0), maxResolution);
     }
 

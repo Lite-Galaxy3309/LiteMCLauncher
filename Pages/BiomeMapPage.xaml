@@ -58,7 +58,7 @@
                         Width="180"
                         Header="渲染半径（区块）"
                         Minimum="1"
-                        Maximum="30000"
+                        Maximum="1875000"
                         SpinButtonPlacementMode="Compact"
                         Value="512" />
                     <Button Grid.Column="3" VerticalAlignment="Bottom" Click="Generate_Click" Content="生成地图" Style="{StaticResource AccentButtonStyle}" />
