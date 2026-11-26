@@ -6,6 +6,7 @@ using LiteMCLauncher.Services;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Mapsui;
 using Mapsui.Extensions;
 using Mapsui.Layers;
@@ -22,6 +23,9 @@ public sealed partial class BiomeMapPage : Page, INotifyPropertyChanged
     private long _currentSeed;
     private SeedVersionGroup? _currentVersion;
     private MPoint? _pinWorld;
+    private bool _syncingLegendScroll;
+    private double _lastLegendExtent = -1;
+    private double _lastLegendViewport = -1;
 
     public BiomeMapPage()
     {
@@ -46,6 +50,9 @@ public sealed partial class BiomeMapPage : Page, INotifyPropertyChanged
             PositionPin();
         };
         MapView.Map.Tapped += Map_Tapped;
+        Unloaded += BiomeMapPage_Unloaded;
+        LegendScroller.SizeChanged += (_, _) => UpdateLegendScrollBar();
+        LegendScroller.LayoutUpdated += (_, _) => UpdateLegendScrollBar();
         Versions = SeedFinderService.GetVersionGroups();
         SelectedVersion = Versions.FirstOrDefault();
     }
@@ -86,6 +93,17 @@ public sealed partial class BiomeMapPage : Page, INotifyPropertyChanged
             if (_statusText == value) return;
             _statusText = value;
             OnPropertyChanged();
+        }
+    }
+
+    private void BiomeMapPage_Unloaded(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            MapView.Map.Tapped -= Map_Tapped;
+        }
+        catch
+        {
         }
     }
 
@@ -171,7 +189,36 @@ public sealed partial class BiomeMapPage : Page, INotifyPropertyChanged
             FitMap();
         }
 
+        DispatcherQueue.TryEnqueue(UpdateLegendScrollBar);
         MapView.ForceUpdate();
+    }
+
+    private void LegendScrollBar_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (_syncingLegendScroll) return;
+        _syncingLegendScroll = true;
+        LegendScroller.ChangeView(e.NewValue, null, null, disableAnimation: true);
+        _syncingLegendScroll = false;
+    }
+
+    private void UpdateLegendScrollBar()
+    {
+        var extent = Math.Max(0, LegendScroller.ExtentWidth);
+        var viewport = Math.Max(1, LegendScroller.ViewportWidth);
+        if (Math.Abs(extent - _lastLegendExtent) < 0.5 &&
+            Math.Abs(viewport - _lastLegendViewport) < 0.5)
+        {
+            return;
+        }
+
+        _lastLegendExtent = extent;
+        _lastLegendViewport = viewport;
+        var maximum = Math.Max(0, extent - viewport);
+        _syncingLegendScroll = true;
+        LegendScrollBar.Maximum = Math.Max(1, maximum);
+        LegendScrollBar.ViewportSize = viewport;
+        LegendScrollBar.Value = Math.Clamp(LegendScroller.HorizontalOffset, 0, maximum);
+        _syncingLegendScroll = false;
     }
 
     private void FitMap()

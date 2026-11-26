@@ -37,6 +37,7 @@ public sealed partial class MainWindow : Window
     };
 
     private bool _isSyncingSelection;
+    private int _languageApplyVersion;
 
     public MainWindow()
     {
@@ -221,25 +222,39 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private static async Task ApplyPageLanguageAsync(FrameworkElement page)
+    private async Task ApplyPageLanguageAsync(FrameworkElement page, int version)
     {
+        if (version != _languageApplyVersion || !ReferenceEquals(NavFrame.Content, page))
+        {
+            return;
+        }
+
         LauncherLanguageService.Apply(page);
         await Task.Delay(250);
+        if (version != _languageApplyVersion || !ReferenceEquals(NavFrame.Content, page)) return;
         LauncherLanguageService.Apply(page);
         await Task.Delay(900);
+        if (version != _languageApplyVersion || !ReferenceEquals(NavFrame.Content, page)) return;
         LauncherLanguageService.Apply(page);
     }
 
     private void NavFrame_Navigated(object sender, NavigationEventArgs e)
     {
         AppTitleBar.IsBackButtonVisible = NavFrame.CanGoBack;
+        var version = ++_languageApplyVersion;
         try
         {
             LauncherLanguageService.Apply(NavFrame.Content as FrameworkElement);
             if (NavFrame.Content is FrameworkElement page)
             {
-                page.Loaded += (_, _) => LauncherLanguageService.ApplyNew(page);
-                _ = ApplyPageLanguageAsync(page);
+                page.Loaded += (_, _) =>
+                {
+                    if (version == _languageApplyVersion && ReferenceEquals(NavFrame.Content, page))
+                    {
+                        LauncherLanguageService.ApplyNew(page);
+                    }
+                };
+                _ = ApplyPageLanguageAsync(page, version);
             }
         }
         catch
@@ -284,6 +299,6 @@ public sealed partial class MainWindow : Window
             return;
         }
 
-        NavFrame.Navigate(pageType, null, new EntranceNavigationTransitionInfo());
+        NavFrame.Navigate(pageType, null, new SuppressNavigationTransitionInfo());
     }
 }

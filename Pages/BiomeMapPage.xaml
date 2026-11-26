@@ -90,30 +90,46 @@
         </Border>
 
         <Border Grid.Row="3" Padding="12" Style="{StaticResource CardBorderStyle}">
-            <ScrollViewer
-                x:Name="LegendScroller"
-                Height="52"
-                Padding="0"
-                HorizontalScrollBarVisibility="Auto"
-                HorizontalScrollMode="Enabled"
-                VerticalContentAlignment="Center"
-                VerticalScrollBarVisibility="Disabled">
-                <ItemsControl ItemsSource="{x:Bind Legend}" VerticalAlignment="Center">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal" Spacing="18" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="models:BiomeLegendItem">
-                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                <Rectangle Width="14" Height="14" Fill="{x:Bind Fill}" RadiusX="3" RadiusY="3" />
-                                <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="{x:Bind Name}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
+            <Grid RowSpacing="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <ScrollViewer
+                    x:Name="LegendScroller"
+                    Height="32"
+                    Padding="0"
+                    HorizontalScrollBarVisibility="Hidden"
+                    HorizontalScrollMode="Enabled"
+                    VerticalContentAlignment="Center"
+                    VerticalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{x:Bind Legend}" VerticalAlignment="Center">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="18" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="models:BiomeLegendItem">
+                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                    <Rectangle Width="14" Height="14" Fill="{x:Bind Fill}" RadiusX="3" RadiusY="3" />
+                                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="{x:Bind Name}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+                <ScrollBar
+                    x:Name="LegendScrollBar"
+                    Grid.Row="1"
+                    Height="14"
+                    Orientation="Horizontal"
+                    Minimum="0"
+                    Maximum="1"
+                    ViewportSize="1"
+                    Visibility="Visible"
+                    ValueChanged="LegendScrollBar_ValueChanged" />
+            </Grid>
         </Border>
     </Grid>
 </Page>

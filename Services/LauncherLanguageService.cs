@@ -1,4 +1,5 @@
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using System.Runtime.CompilerServices;
@@ -106,6 +107,7 @@ public static class LauncherLanguageService
         ["日志"] = "Logs",
         ["最近一次日志"] = "Latest log",
         ["刷新日志"] = "Refresh logs",
+        ["文件夹"] = "Folder",
         ["尚未找到日志"] = "No log found yet",
         ["尚未找到 latest.log 或其他日志文件。启动一次游戏后即可查看。"] = "No latest.log or other log file was found. Launch the game once to view logs.",
         ["启用后，Java、内存、JVM 参数和游戏语言都以此页为准，不再读取全局游戏设置。"] = "When enabled, Java, memory, JVM arguments and game language on this page override the global game settings.",
@@ -492,11 +494,33 @@ public static class LauncherLanguageService
         ["WinUI 3 地图控件。"] = "WinUI 3 map control.",
 
         ["渲染半径（区块）"] = "Render radius (chunks)",
+        ["网易云音乐"] = "NetEase Cloud Music",
+        ["返回实例列表"] = "Back to instances",
+        ["刷新实例内容"] = "Refresh instance contents",
+        ["按游戏版本筛选"] = "Filter by game version",
+        ["按模组加载器筛选"] = "Filter by mod loader",
+        ["安装 Java 8"] = "Install Java 8",
+        ["安装 Java 17"] = "Install Java 17",
+        ["安装 Java 21"] = "Install Java 21",
+        ["安装 Java 25"] = "Install Java 25",
+        ["未知"] = "Unknown",
+        ["未知专辑"] = "Unknown album",
+        ["未知艺术家"] = "Unknown artist",
+        ["未知歌曲"] = "Unknown track",
+        ["未知大小"] = "Unknown size",
+        ["未知日期"] = "Unknown date",
+        ["未知时间"] = "Unknown time",
+        ["未知分类"] = "Uncategorized",
+        ["刚刚"] = "Just now",
+        ["一键安装"] = "Install",
+        ["实例详情"] = "Instance details",
     };
 
     private static readonly Dictionary<string, string> EnglishToChinese = BuildReverseMap();
     private static readonly ConditionalWeakTable<TextBlock, object> HookedTextBlocks = new();
     private static readonly ConditionalWeakTable<ComboBox, object> HookedComboBoxes = new();
+    private static readonly ConditionalWeakTable<FrameworkElement, object> HookedLoadedElements = new();
+    private static readonly ConditionalWeakTable<TabView, object> HookedTabViews = new();
     private static ConditionalWeakTable<DependencyObject, object> ProcessedElements = new();
 
     private static Dictionary<string, string> BuildReverseMap()
@@ -904,6 +928,23 @@ public static class LauncherLanguageService
 
     private static void TranslateElement(DependencyObject element)
     {
+        if (element is FrameworkElement frameworkElement &&
+            !HookedLoadedElements.TryGetValue(frameworkElement, out _))
+        {
+            HookedLoadedElements.Add(frameworkElement, new object());
+            frameworkElement.Loaded += (_, _) => ApplyNew(frameworkElement);
+
+            var automationName = AutomationProperties.GetName(frameworkElement);
+            if (!string.IsNullOrWhiteSpace(automationName))
+            {
+                var translatedName = Translate(automationName);
+                if (!string.Equals(automationName, translatedName, StringComparison.Ordinal))
+                {
+                    AutomationProperties.SetName(frameworkElement, translatedName);
+                }
+            }
+        }
+
         switch (element)
         {
             case TextBlock textBlock:
@@ -932,6 +973,39 @@ public static class LauncherLanguageService
 
             case NavigationViewItem navigationItem when navigationItem.Content is string navigationText:
                 navigationItem.Content = Translate(navigationText);
+                break;
+
+            case TabView tabView:
+                if (!HookedTabViews.TryGetValue(tabView, out _))
+                {
+                    HookedTabViews.Add(tabView, new object());
+                    tabView.SelectionChanged += (_, _) =>
+                    {
+                        if (tabView.SelectedItem is not DependencyObject selected)
+                        {
+                            return;
+                        }
+
+                        tabView.DispatcherQueue.TryEnqueue(() =>
+                        {
+                            ApplyNew(selected);
+                            tabView.DispatcherQueue.TryEnqueue(() => ApplyNew(selected));
+                        });
+                    };
+                }
+
+                foreach (var tabItem in tabView.TabItems.OfType<TabViewItem>())
+                {
+                    if (tabItem.Header is string tabHeader)
+                    {
+                        tabItem.Header = Translate(tabHeader);
+                    }
+                    else if (tabItem.Header is FrameworkElement tabHeaderElement)
+                    {
+                        ApplyNew(tabHeaderElement);
+                    }
+                }
+
                 break;
 
             case TabViewItem tabItem when tabItem.Header is string tabHeader:

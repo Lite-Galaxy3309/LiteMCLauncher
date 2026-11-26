@@ -2,6 +2,12 @@
 
 LiteMCLauncher 是一个面向 Windows 的轻量级 Minecraft 启动器，使用 WinUI 3 与 CmlLib.Core 构建。项目目标是把账号、实例、Java、下载、Mod、音乐和新闻等常用能力集中在一个简洁的桌面界面中。
 
+> **本地化状态（重要）**
+>
+> 本地化目前**尚未完成**。部分页面、动态列表、弹窗和运行时生成的文本仍可能显示中文，快速切换页面时也可能出现控件/字体显示异常。
+>
+> Localization is **incomplete**. Some pages, dynamic lists, dialogs, and runtime-generated text may still appear in Chinese, and controls/fonts may display incorrectly when switching pages quickly.
+
 > **AI 声明**
 >
 > 本项目是 AI 辅助开发项目。项目的大量 C# / XAML 代码、界面文案、调试过程和文档由 **DeepSeek** 参与完成。所有需求、产品取舍、最终代码审查和本地测试由项目发起人负责。使用或二次开发本项目时，请同时遵守相关依赖与 Minecraft 官方的许可和使用条款。

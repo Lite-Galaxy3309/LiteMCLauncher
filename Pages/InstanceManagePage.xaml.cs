@@ -21,6 +21,17 @@ public sealed partial class InstanceManagePage : Page
             AppServices.LauncherState,
             AppServices.Java);
         InitializeComponent();
+        Loaded += (_, _) => ApplyLocalization();
+    }
+
+    private void ApplyLocalization()
+    {
+        WorldsTab.Header = LauncherLanguageService.Translate("世界");
+        ResourcePacksTab.Header = LauncherLanguageService.Translate("资源包");
+        ShaderPacksTab.Header = LauncherLanguageService.Translate("光影包");
+        LogsTab.Header = LauncherLanguageService.Translate("日志");
+        LogFileHeader.Text = LauncherLanguageService.Translate("日志文件");
+        RefreshLogsButton.Content = LauncherLanguageService.Translate("刷新日志");
     }
 
     protected override async void OnNavigatedTo(NavigationEventArgs e)

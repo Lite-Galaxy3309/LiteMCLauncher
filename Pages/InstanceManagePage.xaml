@@ -253,9 +253,10 @@
                     </StackPanel>
                 </TabViewItem.Header>
                 <TabView
+                    x:Name="ResourceTabs"
                     IsAddTabButtonVisible="False"
                     TabWidthMode="SizeToContent">
-                    <TabViewItem Header="世界" IsClosable="False">
+                    <TabViewItem x:Name="WorldsTab" Header="世界" IsClosable="False">
                         <ListView
                             Background="Transparent"
                             BorderThickness="0"
@@ -264,7 +265,7 @@
                             ItemsSource="{x:Bind ViewModel.Worlds}"
                             SelectionMode="None" />
                     </TabViewItem>
-                    <TabViewItem Header="资源包" IsClosable="False">
+                    <TabViewItem x:Name="ResourcePacksTab" Header="资源包" IsClosable="False">
                         <ListView
                             Background="Transparent"
                             BorderThickness="0"
@@ -273,7 +274,7 @@
                             ItemsSource="{x:Bind ViewModel.ResourcePacks}"
                             SelectionMode="None" />
                     </TabViewItem>
-                    <TabViewItem Header="光影包" IsClosable="False">
+                    <TabViewItem x:Name="ShaderPacksTab" Header="光影包" IsClosable="False">
                         <ListView
                             Background="Transparent"
                             BorderThickness="0"
@@ -282,7 +283,7 @@
                             ItemsSource="{x:Bind ViewModel.Shaders}"
                             SelectionMode="None" />
                     </TabViewItem>
-                    <TabViewItem Header="Mods" IsClosable="False">
+                    <TabViewItem x:Name="ModsTab" Header="Mods" IsClosable="False">
                         <ListView
                             Background="Transparent"
                             BorderThickness="0"
@@ -291,7 +292,7 @@
                             ItemsSource="{x:Bind ViewModel.Mods}"
                             SelectionMode="None" />
                     </TabViewItem>
-                    <TabViewItem Header="日志" IsClosable="False">
+                    <TabViewItem x:Name="LogsTab" Header="日志" IsClosable="False">
                         <Grid Padding="4" RowSpacing="8">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -307,7 +308,7 @@
                                         <TextBlock
                                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                             Style="{StaticResource CaptionTextBlockStyle}"
-                                            Text="日志文件" />
+                                            x:Name="LogFileHeader" Text="日志文件" />
                                         <ComboBox
                                             ItemsSource="{x:Bind ViewModel.LogFiles}"
                                             SelectedItem="{x:Bind ViewModel.SelectedLogFile, Mode=TwoWay}"
@@ -326,6 +327,7 @@
                                     <Button
                                         Grid.Column="1"
                                         VerticalAlignment="Center"
+                                        x:Name="RefreshLogsButton"
                                         Click="RefreshLogs_Click"
                                         Content="刷新日志" />
                                 </Grid>
