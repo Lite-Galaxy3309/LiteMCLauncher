@@ -87,6 +87,18 @@ public sealed class GameLaunchService
                     $"选中的 Java 无法运行，请重新安装或改选其他 Java。{javaValidationOutput}".Trim());
             }
 
+            var requiredMajor = JavaService.GetRequiredJavaMajor(instance.GameVersion);
+            var selectedVersion = JavaService.ReadJavaVersionFromPath(javaPath);
+            var selectedMajor = JavaService.ParseJavaMajor(selectedVersion ?? string.Empty);
+            var moddedInstance = !string.IsNullOrWhiteSpace(instance.Loader) &&
+                                 !string.Equals(instance.Loader, "原版", StringComparison.OrdinalIgnoreCase);
+            if (selectedMajor != 0 &&
+                (selectedMajor < requiredMajor || (moddedInstance && selectedMajor != requiredMajor)))
+            {
+                throw new InvalidOperationException(
+                    $"该实例需要 Java {requiredMajor}，当前选择的是 Java {selectedVersion}。模组加载器请使用对应 Java 大版本，Fabric/Forge/NeoForge 1.20.1 请选择 Java 17。");
+            }
+
             var launchPath = CreateLaunchPath(instance);
             tracker.ReportStage($"正在检查游戏资源完整性并准备启动 {instance.DisplayName}...");
 
@@ -162,6 +174,11 @@ public sealed class GameLaunchService
 
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
+
+            var outputPath = Path.Combine(AppPaths.DataDirectory, "last-java-output.log");
+            Task? outputTask = null;
 
             try
             {
@@ -176,9 +193,41 @@ public sealed class GameLaunchService
             {
             }
 
-            if (!process.Start())
+            try
             {
-                throw new InvalidOperationException("无法启动 Minecraft 进程。");
+                if (!process.Start())
+                {
+                    throw new InvalidOperationException("无法启动 Minecraft 进程。");
+                }
+            }
+            catch (Exception exception) when (exception is not InvalidOperationException)
+            {
+                throw new InvalidOperationException(
+                    $"无法启动 Minecraft 进程：{exception.Message}\n" +
+                    $"Java: {process.StartInfo.FileName}\n" +
+                    $"Game: {instance.Id}", exception);
+            }
+
+            outputTask = CaptureJavaOutputAsync(process, outputPath);
+
+            try
+            {
+                await Task.Delay(TimeSpan.FromSeconds(2));
+                if (process.HasExited)
+                {
+                    var output = string.Empty;
+                    if (outputTask is not null && await Task.WhenAny(outputTask, Task.Delay(1000)) == outputTask)
+                    {
+                        output = await File.ReadAllTextAsync(outputPath);
+                    }
+
+                    throw new InvalidOperationException(
+                        $"Minecraft 进程启动后立即退出（退出码 {process.ExitCode}）。\n{output}".Trim());
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
 
             tracker.ReportComplete($"Minecraft {instance.Id} 已启动。");
@@ -201,16 +250,16 @@ public sealed class GameLaunchService
 
         if (Directory.Exists(path))
         {
-            var javaw = Path.Combine(path, "bin", "javaw.exe");
-            if (File.Exists(javaw))
-            {
-                return javaw;
-            }
-
             var java = Path.Combine(path, "bin", "java.exe");
             if (File.Exists(java))
             {
                 return java;
+            }
+
+            var javaw = Path.Combine(path, "bin", "javaw.exe");
+            if (File.Exists(javaw))
+            {
+                return javaw;
             }
         }
 
@@ -221,6 +270,22 @@ public sealed class GameLaunchService
         }
 
         return null;
+    }
+
+    private static async Task CaptureJavaOutputAsync(Process process, string outputPath)
+    {
+        try
+        {
+            var stdout = process.StandardOutput.ReadToEndAsync();
+            var stderr = process.StandardError.ReadToEndAsync();
+            var output = $"--- stdout ---{Environment.NewLine}{await stdout}" +
+                         $"{Environment.NewLine}--- stderr ---{Environment.NewLine}{await stderr}";
+            Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
+            await File.WriteAllTextAsync(outputPath, output);
+        }
+        catch
+        {
+        }
     }
 
     private static void ApplyGameLanguage(string gameDirectory, string? language)

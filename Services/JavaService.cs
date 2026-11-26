@@ -337,13 +337,32 @@ public sealed class JavaService
             return 21;
         }
 
+        // Mojang's version metadata is authoritative when the version is
+        // already installed. Loader versions often omit this field, so fall
+        // back to the game version range below.
+        var metadataMajor = TryReadVersionJavaMajor(gameVersion);
+        if (metadataMajor is > 0)
+        {
+            return metadataMajor.Value == 16 ? 17 : Math.Max(metadataMajor.Value, 8);
+        }
+
         var text = gameVersion.Trim();
         if (text.StartsWith("1.", StringComparison.OrdinalIgnoreCase))
         {
             var parts = text.Split('.');
             if (parts.Length >= 2 && int.TryParse(parts[1], out var minor))
             {
-                return minor <= 16 ? 8 : minor <= 20 ? 17 : 21;
+                if (minor >= 21) return 21;
+                if (minor == 20)
+                {
+                    return parts.Length >= 3 &&
+                           int.TryParse(parts[2], out var patch) &&
+                           patch >= 5
+                        ? 21
+                        : 17;
+                }
+
+                return minor >= 17 ? 17 : 8;
             }
 
             return 8;
@@ -351,10 +370,38 @@ public sealed class JavaService
 
         if (int.TryParse(text.Split('.', '-')[0], out var major))
         {
-            return major >= 20 ? 21 : 17;
+            return major >= 26 ? 25 : major >= 20 ? 21 : 17;
         }
 
         return 21;
+    }
+
+    private static int? TryReadVersionJavaMajor(string gameVersion)
+    {
+        try
+        {
+            var jsonPath = Path.Combine(
+                AppPaths.VersionsDirectory,
+                gameVersion,
+                $"{gameVersion}.json");
+            if (!File.Exists(jsonPath))
+            {
+                return null;
+            }
+
+            using var document = JsonDocument.Parse(File.ReadAllText(jsonPath));
+            if (document.RootElement.TryGetProperty("javaVersion", out var javaVersion) &&
+                javaVersion.TryGetProperty("majorVersion", out var majorVersion) &&
+                majorVersion.TryGetInt32(out var major))
+            {
+                return major;
+            }
+        }
+        catch
+        {
+        }
+
+        return null;
     }
 
     public static int ParseJavaMajor(string version)
@@ -388,16 +435,16 @@ public sealed class JavaService
 
         if (Directory.Exists(path))
         {
-            var javaw = Path.Combine(path, "bin", "javaw.exe");
-            if (File.Exists(javaw))
-            {
-                return javaw;
-            }
-
             var java = Path.Combine(path, "bin", "java.exe");
             if (File.Exists(java))
             {
                 return java;
+            }
+
+            var javaw = Path.Combine(path, "bin", "javaw.exe");
+            if (File.Exists(javaw))
+            {
+                return javaw;
             }
         }
 

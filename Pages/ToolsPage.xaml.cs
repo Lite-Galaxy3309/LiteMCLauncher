@@ -19,4 +19,9 @@ public sealed partial class ToolsPage : Page
     {
         Frame.Navigate(typeof(SeedFinderPage));
     }
+
+    private void BiomeMapTool_Click(object sender, RoutedEventArgs e)
+    {
+        Frame.Navigate(typeof(BiomeMapPage));
+    }
 }

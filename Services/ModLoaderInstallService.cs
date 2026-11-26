@@ -160,7 +160,7 @@ public sealed class ModLoaderInstallService
                 $"找不到适用于 Minecraft {gameVersion} 的 Forge {normalizedRequested}。");
         }
 
-        var javaPath = await GetJavaExecutableAsync(cancellationToken);
+        var javaPath = await GetJavaExecutableAsync(gameVersion, cancellationToken);
         var installer = new ForgeInstallerVersionMapper().CreateInstaller(forgeVersion);
         var options = new ForgeInstallOptionsApi
         {
@@ -203,7 +203,7 @@ public sealed class ModLoaderInstallService
                 $"找不到适用于 Minecraft {gameVersion} 的 NeoForge {normalizedRequested}。");
         }
 
-        var javaPath = await GetJavaExecutableAsync(cancellationToken);
+        var javaPath = await GetJavaExecutableAsync(gameVersion, cancellationToken);
         var options = new ForgeInstallOptionsApi
         {
             JavaPath = javaPath,
@@ -218,7 +218,7 @@ public sealed class ModLoaderInstallService
         return new ModLoaderInstallResult(versionId, ModLoaderType.NeoForge, neoVersion.NeoForgeVersionName);
     }
 
-    private async Task<string> GetJavaExecutableAsync(CancellationToken cancellationToken)
+    private async Task<string> GetJavaExecutableAsync(string gameVersion, CancellationToken cancellationToken)
     {
         var configured = AppServices.Settings.JavaPath;
         if (!string.IsNullOrWhiteSpace(configured))
@@ -231,7 +231,7 @@ public sealed class ModLoaderInstallService
             }
         }
 
-        var runtime = await AppServices.Java.GetPreferredRuntimeAsync(cancellationToken);
+        var runtime = await AppServices.Java.GetPreferredRuntimeForGameAsync(gameVersion, cancellationToken);
         if (runtime is not null && File.Exists(runtime.JavaExecutable))
         {
             return runtime.JavaExecutable;

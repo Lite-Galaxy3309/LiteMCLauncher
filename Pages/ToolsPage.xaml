@@ -27,7 +27,11 @@
                 TextWrapping="Wrap" />
         </StackPanel>
 
-        <Grid Grid.Row="1" ColumnSpacing="16" VerticalAlignment="Top">
+        <Grid Grid.Row="1" ColumnSpacing="16" RowSpacing="16" VerticalAlignment="Top">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
@@ -108,6 +112,40 @@
                                 MaxLines="2"
                                 Style="{StaticResource CaptionTextBlockStyle}"
                                 Text="按种子搜索村庄、要塞、海底神殿等结构"
+                                TextTrimming="CharacterEllipsis"
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Button>
+
+            <Button
+                Grid.Row="1"
+                Height="150"
+                Padding="0"
+                Background="Transparent"
+                BorderThickness="0"
+                Click="BiomeMapTool_Click"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                VerticalContentAlignment="Stretch">
+                <Border Padding="16" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource CardBorderStyle}">
+                    <Grid ColumnSpacing="14">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="64" Height="64" VerticalAlignment="Center" Style="{StaticResource IconTileBorderStyle}">
+                            <FontIcon FontSize="26" Glyph="&#xE707;" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+                            <TextBlock MaxLines="1" Style="{StaticResource CardTitleTextBlockStyle}" Text="群系地图" TextTrimming="CharacterEllipsis" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                MaxLines="2"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="本地渲染种子群系"
                                 TextTrimming="CharacterEllipsis"
                                 TextWrapping="Wrap" />
                         </StackPanel>

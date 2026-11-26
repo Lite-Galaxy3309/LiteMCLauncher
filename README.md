@@ -16,13 +16,13 @@ LiteMCLauncher 是一个面向 Windows 的轻量级 Minecraft 启动器，使用
 - 版本下载、资源完整性与 Java 版本启动前检查
 - Java 下载运行时启动前会执行 `java -version` 校验，并使用真实的 `java.exe` 路径启动游戏
 - Java 8 / 17 / 21 / 25 一键安装，统一安装到 `.minecraft/java/OpenJDK-版本号`，支持清华 TUNA 镜像与 Adoptium 官方源
-- 全局 Java 自动检测；按游戏版本自动选择 Java 8 / 17 / 21+
+- 全局 Java 自动检测；优先读取版本 JSON 的 `javaVersion.majorVersion`，1.20.5+ 使用 Java 21、26.x 使用 Java 25；模组加载器按对应大版本校验
 - 实例特定游戏设置：Java、内存、JVM 参数、游戏语言
 - 资源管理：世界、资源包、光影包、Mods、日志
 - 日志文件选择：查看实例全部日志文件；INFO 绿色、WARN 黄色、ERROR 红色、`at ...` 堆栈蓝色
 - 本地音乐播放：播放列表、专辑封面、循环模式、启动器/游戏启动时自动播放
 - 在线音乐：独立搜索页与播放器页，支持上一首/暂停/下一首、单曲循环/列表循环/随机播放、可删除的历史播放；可填写 MUSIC_U Cookie 登录自己的账号
-- 实用工具：坐标计算器（主世界/下界互转、直线距离）与种子结构查找器（候选位置，不保证 100% 准确）
+- 实用工具：坐标计算器（主世界/下界互转、直线距离）、种子结构查找器（候选位置，不保证 100% 准确）与群系地图（本地渲染、可选半径、点击读取坐标与群系）
 - 性能优化：移除界面翻译的持续 LayoutUpdated 扫描，改为加载时翻译 + 动态文本事件钩子；修复首页事件订阅泄漏和在线播放 MediaSource 泄漏
 - Mojang 官方新闻与 Java 更新，支持在启动器内阅读完整正文和图片
 - 启动器界面语言：简体中文 / English（覆盖设置、关于、实例、下载、音乐、新闻、Mod 等静态界面）
@@ -87,6 +87,7 @@ LiteMCLauncher 的实现离不开以下社区项目、平台和文档：
 | Modrinth API | Mod 搜索、项目详情与下载信息 | https://docs.modrinth.com |
 | ChunkBase | 种子查看器仅在 v0.6.0–v0.6.1 使用其公开网页；v0.6.2 起移除 | https://www.chunkbase.com/apps/seed-map |
 | RZeroF1.Minecraft.SeedMap / Cubiomes | 种子结构候选位置与生物群系计算 | https://github.com/RZeroF1/Minecraft-SeedUniverse |
+| Mapsui | WinUI 3 地图控件；群系地图使用 | https://github.com/Mapsui/Mapsui |
 | Eclipse Adoptium / Temurin | Java 运行时下载与安装包 | https://adoptium.net |
 | 清华 TUNA 镜像 | Java 下载镜像源 | https://mirrors.tuna.tsinghua.edu.cn |
 | CurseForge | Mod 与整合包搜索、下载 API | https://www.curseforge.com |

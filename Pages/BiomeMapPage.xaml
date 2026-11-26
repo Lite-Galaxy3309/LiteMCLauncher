@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="LiteMCLauncher.Pages.BiomeMapPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:LiteMCLauncher.Pages"
+    xmlns:mapsui="using:Mapsui.UI.WinUI"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:LiteMCLauncher.Models"
+    mc:Ignorable="d">
+
+    <Grid Padding="32,24,32,24" RowSpacing="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Button AutomationProperties.Name="Back" Click="Back_Click" Padding="10">
+                <FontIcon FontSize="16" Glyph="&#xE72B;" />
+            </Button>
+            <StackPanel Grid.Column="1" Spacing="4">
+                <TextBlock Style="{StaticResource PageTitleTextBlockStyle}" Text="群系地图" />
+                <TextBlock Style="{StaticResource PageSubtitleTextBlockStyle}" Text="本地渲染种子群系。" />
+            </StackPanel>
+            <ProgressRing Grid.Column="2" Width="28" Height="28" VerticalAlignment="Center" IsActive="{x:Bind IsRendering, Mode=OneWay}" />
+        </Grid>
+
+        <Border Grid.Row="1" Padding="16" Style="{StaticResource CardBorderStyle}">
+            <StackPanel Spacing="10">
+                <Grid ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="SeedBox" Header="种子" PlaceholderText="数字或字符串种子" />
+                    <ComboBox
+                        x:Name="VersionBox"
+                        Grid.Column="1"
+                        Width="190"
+                        Header="MC 版本"
+                        DisplayMemberPath="Display"
+                        ItemsSource="{x:Bind Versions}"
+                        SelectedItem="{x:Bind SelectedVersion, Mode=TwoWay}" />
+                    <NumberBox
+                        x:Name="RadiusBox"
+                        Grid.Column="2"
+                        Width="180"
+                        Header="渲染半径（区块）"
+                        Minimum="1"
+                        Maximum="30000"
+                        SpinButtonPlacementMode="Compact"
+                        Value="512" />
+                    <Button Grid.Column="3" VerticalAlignment="Bottom" Click="Generate_Click" Content="生成地图" Style="{StaticResource AccentButtonStyle}" />
+                </Grid>
+                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" Text="{x:Bind StatusText, Mode=OneWay}" TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="2" Padding="1" Style="{StaticResource CardBorderStyle}">
+            <Grid>
+                <mapsui:MapControl x:Name="MapView" />
+                <Canvas x:Name="PinOverlay" IsHitTestVisible="False">
+                    <Border
+                        x:Name="PinPopup"
+                        Width="210"
+                        Padding="10"
+                        Background="#EE202020"
+                        BorderBrush="#FF707070"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Visibility="Collapsed">
+                        <StackPanel Spacing="4">
+                            <FontIcon FontSize="20" Foreground="#E74C3C" Glyph="&#xE81D;" />
+                            <TextBlock x:Name="PinText" Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                </Canvas>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="3" Padding="12" Style="{StaticResource CardBorderStyle}">
+            <ScrollViewer
+                Height="72"
+                Padding="0,0,0,18"
+                HorizontalScrollBarVisibility="Hidden"
+                HorizontalScrollMode="Enabled"
+                VerticalScrollBarVisibility="Disabled">
+                <ItemsControl ItemsSource="{x:Bind Legend}" VerticalAlignment="Top">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="18" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:BiomeLegendItem">
+                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <Rectangle Width="14" Height="14" Fill="{x:Bind Fill}" RadiusX="3" RadiusY="3" />
+                                <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="{x:Bind Name}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</Page>

@@ -482,6 +482,16 @@ public static class LauncherLanguageService
         ["结构搜索结果为候选位置，不保证 100% 准确。"] = "Structure results are candidate positions and are not guaranteed to be 100% accurate.",
 
         ["种子查看器在 v0.6.0–v0.6.1 使用其公开网页；v0.6.2 起移除。"] = "The seed viewer used its public web page in v0.6.0–v0.6.1 and was removed in v0.6.2.",
+
+        ["群系地图"] = "Biome map",
+        ["本地渲染种子群系。"] = "Render seed biomes locally.",
+        ["本地渲染种子群系"] = "Local seed biome rendering",
+        ["生成地图"] = "Generate map",
+        ["输入种子后生成群系地图。"] = "Enter a seed to generate a biome map.",
+
+        ["WinUI 3 地图控件。"] = "WinUI 3 map control.",
+
+        ["渲染半径（区块）"] = "Render radius (chunks)",
     };
 
     private static readonly Dictionary<string, string> EnglishToChinese = BuildReverseMap();
