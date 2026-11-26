@@ -9,7 +9,7 @@ public static class LauncherInfo
 
     public const string Version = "0.6.4";
 
-    public const string BuildDate = "2026-11-24";
+    public const string BuildDate = "2026-11-26";
 
     public const string Author = "Lite";
 }

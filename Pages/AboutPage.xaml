@@ -76,18 +76,7 @@
                         <TextBlock
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             Text="构建时间" />
-                        <TextBlock Grid.Column="1" Text="2026-11-24" />
-                    </Grid>
-
-                    <Grid ColumnSpacing="16">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Text="发布通道" />
-                        <TextBlock Grid.Column="1" Text="Preview" />
+                        <TextBlock Grid.Column="1" Text="2026-11-26" />
                     </Grid>
 
                     <Grid ColumnSpacing="16">
